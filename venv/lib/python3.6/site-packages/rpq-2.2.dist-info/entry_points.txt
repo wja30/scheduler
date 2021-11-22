@@ -1,0 +1,3 @@
+[console_scripts]
+rpq_monitor = rpq_src.queue_monitor:main
+
