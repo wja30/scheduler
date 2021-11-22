@@ -27,9 +27,10 @@ if not app.debug:
 
 
 
-endpoint = "http://ac3f829455c674e71b82f83902cec10f-19e2d971b5ad040f.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"
-data = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
+endpoint = "http://a53eba14af27b4920a2505c87169e06a-deef86faded1927d.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"
+#data = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
 headers = {"content-type": "application/json"}
+headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60
 ##########################################
 
@@ -38,11 +39,11 @@ def test():
 
 
 def redis_connection():
-    r = Redis(host='127.0.0.1', port=6379, decode_responses=True)
+    r = Redis(host='23.23.220.207', port=6379, decode_responses=True, password='redisscheduler')
     if r.ping():
         logging.info("Connected to Redis")
     # Redis instance
-    rq = redis.StrictRedis(host='127.0.0.1', port=6379, db=0, password='')
+    rq = redis.StrictRedis(host='23.23.220.207', port=6379, db=0, password='redisscheduler')
     # RpqQueue
     queue = RpqQueue(rq, 'simple_queue')
     return r, queue
@@ -53,15 +54,37 @@ def redis_connection():
 def hello_world():
 	return 'Hello aWorld!'
 
-@app.route("/",methods=['GET', 'POST'])
+@app.route("/off/endpoint",methods=['GET', 'POST'])
 def post():
     if(request.method == 'GET'):
         return "GET"
     elif(request.method == 'POST'):
-        
-        # scheduler management
+        # cluster endpoint insert
+        return "off_endpoint"
+ 
+@app.route("/off/meta",methods=['GET', 'POST'])
+def post():
+    if(request.method == 'GET'):
+        return "GET"
+    elif(request.method == 'POST'):
+        # insert cluster offline information
+        return "off_meta"
+##########################################
+
+@app.route("/call/R",methods=['GET', 'POST'])
+def post():
+    if(request.method == 'GET'):
+        return "GET"
+    elif(request.method == 'POST'):
+      
+        data = json.dumps(request.get_json())
+        logging.info(data)
+
+        # evaluation & select endpoint
+
         r, queue = redis_connection()
 
+        # scheduler manager
 
         logging.info('* push:')
         res = queue.push('test_item')
