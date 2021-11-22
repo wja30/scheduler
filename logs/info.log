@@ -1,10 +1,72 @@
-2021-11-12 11:30:24,459: Connected to Redis
-2021-11-12 11:30:24,460: * push:
-2021-11-12 11:30:24,460: 1
-2021-11-12 11:30:24,461: * pop:
-2021-11-12 11:30:24,461: test_item
-2021-11-12 11:32:35,056: Connected to Redis
-2021-11-12 11:32:35,057: * push:
-2021-11-12 11:32:35,057: 1
-2021-11-12 11:32:35,057: * pop:
-2021-11-12 11:32:35,058: test_item
+2021-11-22 06:38:26,398: Connected to Redis
+2021-11-22 06:38:26,399: * push:
+2021-11-22 06:38:26,399: 1
+2021-11-22 06:38:26,399: * pop:
+2021-11-22 06:38:26,399: test_item
+2021-11-22 06:38:26,406: Exception on / [POST]
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/ubuntu/scheduler/app.py", line 90, in post
+    return json.dumps(resp.json())
+UnboundLocalError: local variable 'resp' referenced before assignment
+2021-11-22 06:40:40,347: Connected to Redis
+2021-11-22 06:40:40,348: * push:
+2021-11-22 06:40:40,348: 1
+2021-11-22 06:40:40,348: * pop:
+2021-11-22 06:40:40,348: test_item
+2021-11-22 06:40:40,360: Exception on / [POST]
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/ubuntu/scheduler/app.py", line 90, in post
+    return json.dumps(resp.json())
+UnboundLocalError: local variable 'resp' referenced before assignment
+2021-11-22 06:56:35,710: Connected to Redis
+2021-11-22 06:56:35,710: * push:
+2021-11-22 06:56:35,711: 1
+2021-11-22 06:56:35,711: * pop:
+2021-11-22 06:56:35,711: test_item
+2021-11-22 06:56:35,744: Exception on / [POST]
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/ubuntu/scheduler/app.py", line 90, in post
+    return json.dumps(resp.json())
+UnboundLocalError: local variable 'resp' referenced before assignment
+2021-11-22 07:26:12,112: Connected to Redis
+2021-11-22 07:26:12,113: * push:
+2021-11-22 07:26:12,113: 1
+2021-11-22 07:26:12,113: * pop:
+2021-11-22 07:26:12,113: test_item
+2021-11-22 07:26:12,118: Exception on / [POST]
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/ubuntu/scheduler/app.py", line 90, in post
+    return json.dumps(resp.json())
+UnboundLocalError: local variable 'resp' referenced before assignment
