@@ -55,15 +55,21 @@ def hello_world():
 	return 'Hello aWorld!'
 
 @app.route("/off/endpoint",methods=['GET', 'POST'])
-def post():
+def offend_post():
     if(request.method == 'GET'):
         return "GET"
     elif(request.method == 'POST'):
         # cluster endpoint insert
+        r, queue = redis_connection()
+        #endpoints = json.dumps(request.get_json())
+        #logging.info(endpoints)
+        endpoints = request.get_json()
+        for key, value in endpoints.items():
+            r.set(key, value)
         return "off_endpoint"
  
 @app.route("/off/meta",methods=['GET', 'POST'])
-def post():
+def offmeta_post():
     if(request.method == 'GET'):
         return "GET"
     elif(request.method == 'POST'):
@@ -72,7 +78,7 @@ def post():
 ##########################################
 
 @app.route("/call/R",methods=['GET', 'POST'])
-def post():
+def R_post():
     if(request.method == 'GET'):
         return "GET"
     elif(request.method == 'POST'):

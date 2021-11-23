@@ -192,3 +192,62 @@ UnboundLocalError: local variable 'resp' referenced before assignment
 2021-11-22 11:34:25,705: 1
 2021-11-22 11:34:25,705: * pop:
 2021-11-22 11:34:25,705: test_item
+2021-11-23 01:48:55,494: null
+2021-11-23 01:48:55,496: Connected to Redis
+2021-11-23 01:48:55,501: * push:
+2021-11-23 01:48:55,501: 1
+2021-11-23 01:48:55,501: * pop:
+2021-11-23 01:48:55,502: test_item
+2021-11-23 01:48:55,523: Exception on /call/R [POST]
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/ubuntu/scheduler/app.py", line 113, in R_post
+    return json.dumps(resp.json())
+UnboundLocalError: local variable 'resp' referenced before assignment
+2021-11-23 01:49:55,867: {"url": "https://i.imgur.com/213xcvs.jpg"}
+2021-11-23 01:49:55,868: Connected to Redis
+2021-11-23 01:49:55,870: * push:
+2021-11-23 01:49:55,871: 1
+2021-11-23 01:49:55,871: * pop:
+2021-11-23 01:49:55,871: test_item
+2021-11-23 01:49:55,891: Exception on /call/R [POST]
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/ubuntu/scheduler/app.py", line 113, in R_post
+    return json.dumps(resp.json())
+UnboundLocalError: local variable 'resp' referenced before assignment
+2021-11-23 02:55:30,060: Connected to Redis
+2021-11-23 02:55:30,063: http://a53eba14af27b4920a2505c87169e06a-deef86faded1927d.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-23 02:57:19,707: Connected to Redis
+2021-11-23 02:57:19,709: {"i1operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "i1api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "p2operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "p2api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "p3operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "p3api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "c5operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "c5api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com"}
+2021-11-23 03:01:52,669: Connected to Redis
+2021-11-23 03:01:52,671: {"i1operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "i1api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "p2operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "p2api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "p3operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "p3api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "c5operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "c5api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com"}
+2021-11-23 03:01:52,672: Exception on /off/endpoint [POST]
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/ubuntu/scheduler/app.py", line 66, in offend_post
+    for key, value in endpoints.items():
+AttributeError: 'str' object has no attribute 'items'
+2021-11-23 03:04:02,619: Connected to Redis
+2021-11-23 03:04:42,795: Connected to Redis
