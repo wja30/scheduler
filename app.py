@@ -75,6 +75,14 @@ def offmeta_post():
     elif(request.method == 'POST'):
         # insert cluster offline information
         return "off_meta"
+
+
+@app.route("/check",methods=['GET'])
+def check_get():
+    if(request.method == 'GET'):
+        # async check API
+        return "check_GET"
+
 ##########################################
 
 @app.route("/call/R",methods=['GET', 'POST'])
@@ -116,6 +124,8 @@ def R_post():
 
         # cortex metadata management (inflight req, avg latnecy, etc)
         # cortex endpoint management
+        #return uuid
+        
         return json.dumps(resp.json())
 
 
