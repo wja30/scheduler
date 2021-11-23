@@ -1,4 +1,4 @@
-Exception on /off/endpoint [POST]
+Exception on /call/R [POST]
 Traceback (most recent call last):
   File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
     response = self.full_dispatch_request()
@@ -8,6 +8,6 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 66, in offend_post
-    for key, value in endpoints.items():
-AttributeError: 'str' object has no attribute 'items'
+  File "/home/ubuntu/scheduler/app.py", line 172, in R_post
+    return json.dumps(resp.json())
+UnboundLocalError: local variable 'resp' referenced before assignment

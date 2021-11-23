@@ -1,9 +1,44 @@
-2021-11-22 06:38:26,398: Connected to Redis
-2021-11-22 06:38:26,399: * push:
-2021-11-22 06:38:26,399: 1
-2021-11-22 06:38:26,399: * pop:
-2021-11-22 06:38:26,399: test_item
-2021-11-22 06:38:26,406: Exception on / [POST]
+2021-11-23 10:49:33,306: Connected to Redis
+2021-11-23 10:49:33,310: endpoint :http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-23 10:49:33,311: * push:
+2021-11-23 10:49:33,312: 1
+2021-11-23 10:49:33,312: * pop:
+2021-11-23 10:49:33,312: 0b0a09c0-4c4b-11ec-9f90-0a4a64cd4f01
+2021-11-23 10:49:33,313: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-23 10:49:33,449: http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.1356seconds
+2021-11-23 10:49:34,486: Connected to Redis
+2021-11-23 10:49:34,489: endpoint :http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-23 10:49:34,490: * push:
+2021-11-23 10:49:34,491: 1
+2021-11-23 10:49:34,491: * pop:
+2021-11-23 10:49:34,491: 0b0a09c1-4c4b-11ec-9f90-0a4a64cd4f01
+2021-11-23 10:49:34,492: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-23 10:49:34,623: http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.1306seconds
+2021-11-23 10:49:35,644: Connected to Redis
+2021-11-23 10:49:35,648: endpoint :http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-23 10:49:35,649: * push:
+2021-11-23 10:49:35,650: 1
+2021-11-23 10:49:35,650: * pop:
+2021-11-23 10:49:35,650: 0c6ec396-4c4b-11ec-9f90-0a4a64cd4f01
+2021-11-23 10:49:35,651: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-23 10:49:35,803: http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.1518seconds
+2021-11-23 10:49:36,714: Connected to Redis
+2021-11-23 10:49:36,717: endpoint :http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-23 10:49:36,718: * push:
+2021-11-23 10:49:36,719: 1
+2021-11-23 10:49:36,719: * pop:
+2021-11-23 10:49:36,720: 0c6ec397-4c4b-11ec-9f90-0a4a64cd4f01
+2021-11-23 10:49:36,720: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-23 10:49:36,865: http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.144seconds
+2021-11-23 10:54:58,752: Connected to Redis
+2021-11-23 10:54:58,755: endpoint :http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-23 10:54:58,756: * push:
+2021-11-23 10:54:58,757: 1
+2021-11-23 10:54:58,757: * pop:
+2021-11-23 10:54:58,757: cd05046c-4c4b-11ec-9f90-0a4a64cd4f01
+2021-11-23 10:54:58,758: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "endpoint_policy"}
+2021-11-23 10:54:58,760: endpoint_policy latency: 0.0011seconds
+2021-11-23 10:54:58,760: Exception on /call/R [POST]
 Traceback (most recent call last):
   File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
     response = self.full_dispatch_request()
@@ -13,241 +48,14 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 90, in post
+  File "/home/ubuntu/scheduler/app.py", line 172, in R_post
     return json.dumps(resp.json())
 UnboundLocalError: local variable 'resp' referenced before assignment
-2021-11-22 06:40:40,347: Connected to Redis
-2021-11-22 06:40:40,348: * push:
-2021-11-22 06:40:40,348: 1
-2021-11-22 06:40:40,348: * pop:
-2021-11-22 06:40:40,348: test_item
-2021-11-22 06:40:40,360: Exception on / [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 90, in post
-    return json.dumps(resp.json())
-UnboundLocalError: local variable 'resp' referenced before assignment
-2021-11-22 06:56:35,710: Connected to Redis
-2021-11-22 06:56:35,710: * push:
-2021-11-22 06:56:35,711: 1
-2021-11-22 06:56:35,711: * pop:
-2021-11-22 06:56:35,711: test_item
-2021-11-22 06:56:35,744: Exception on / [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 90, in post
-    return json.dumps(resp.json())
-UnboundLocalError: local variable 'resp' referenced before assignment
-2021-11-22 07:26:12,112: Connected to Redis
-2021-11-22 07:26:12,113: * push:
-2021-11-22 07:26:12,113: 1
-2021-11-22 07:26:12,113: * pop:
-2021-11-22 07:26:12,113: test_item
-2021-11-22 07:26:12,118: Exception on / [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 90, in post
-    return json.dumps(resp.json())
-UnboundLocalError: local variable 'resp' referenced before assignment
-2021-11-22 08:32:24,468: Connected to Redis
-2021-11-22 08:32:24,468: * push:
-2021-11-22 08:32:24,469: 1
-2021-11-22 08:32:24,469: * pop:
-2021-11-22 08:32:24,469: test_item
-2021-11-22 08:32:24,475: Exception on / [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 90, in post
-    return json.dumps(resp.json())
-UnboundLocalError: local variable 'resp' referenced before assignment
-2021-11-22 08:32:24,531: Connected to Redis
-2021-11-22 08:32:24,531: * push:
-2021-11-22 08:32:24,532: 1
-2021-11-22 08:32:24,532: * pop:
-2021-11-22 08:32:24,532: test_item
-2021-11-22 08:32:24,534: Exception on / [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 90, in post
-    return json.dumps(resp.json())
-UnboundLocalError: local variable 'resp' referenced before assignment
-2021-11-22 08:33:11,591: Connected to Redis
-2021-11-22 08:33:11,592: * push:
-2021-11-22 08:33:11,592: 1
-2021-11-22 08:33:11,592: * pop:
-2021-11-22 08:33:11,592: test_item
-2021-11-22 08:36:30,931: Connected to Redis
-2021-11-22 08:36:30,932: * push:
-2021-11-22 08:36:30,932: 1
-2021-11-22 08:36:30,932: * pop:
-2021-11-22 08:36:30,932: test_item
-2021-11-22 08:36:36,732: Connected to Redis
-2021-11-22 08:36:36,733: * push:
-2021-11-22 08:36:36,733: 1
-2021-11-22 08:36:36,733: * pop:
-2021-11-22 08:36:36,733: test_item
-2021-11-22 08:36:39,203: Connected to Redis
-2021-11-22 08:36:39,203: * push:
-2021-11-22 08:36:39,204: 1
-2021-11-22 08:36:39,204: * pop:
-2021-11-22 08:36:39,204: test_item
-2021-11-22 09:31:20,497: Connected to Redis
-2021-11-22 09:31:20,500: * push:
-2021-11-22 09:31:20,500: 1
-2021-11-22 09:31:20,500: * pop:
-2021-11-22 09:31:20,501: test_item
-2021-11-22 10:39:41,117: Connected to Redis
-2021-11-22 10:39:41,119: * push:
-2021-11-22 10:39:41,120: 1
-2021-11-22 10:39:41,120: * pop:
-2021-11-22 10:39:41,121: test_item
-2021-11-22 10:42:03,784: Connected to Redis
-2021-11-22 10:42:03,786: * push:
-2021-11-22 10:42:03,786: 1
-2021-11-22 10:42:03,786: * pop:
-2021-11-22 10:42:03,787: test_item
-2021-11-22 10:44:21,598: Connected to Redis
-2021-11-22 10:44:21,600: * push:
-2021-11-22 10:44:21,601: 1
-2021-11-22 10:44:21,601: * pop:
-2021-11-22 10:44:21,601: test_item
-2021-11-22 10:54:51,090: Connected to Redis
-2021-11-22 10:54:51,092: * push:
-2021-11-22 10:54:51,093: 1
-2021-11-22 10:54:51,093: * pop:
-2021-11-22 10:54:51,093: test_item
-2021-11-22 10:57:18,388: Connected to Redis
-2021-11-22 10:57:18,390: * push:
-2021-11-22 10:57:18,390: 1
-2021-11-22 10:57:18,390: * pop:
-2021-11-22 10:57:18,391: test_item
-2021-11-22 10:59:49,432: "{'url': 'https://i.imgur.com/213xcvs.jpg'}"
-2021-11-22 10:59:49,433: Connected to Redis
-2021-11-22 10:59:49,436: * push:
-2021-11-22 10:59:49,436: 1
-2021-11-22 10:59:49,436: * pop:
-2021-11-22 10:59:49,437: test_item
-2021-11-22 11:01:34,366: {"url": "https://i.imgur.com/213xcvs.jpg"}
-2021-11-22 11:01:34,368: Connected to Redis
-2021-11-22 11:01:34,370: * push:
-2021-11-22 11:01:34,370: 1
-2021-11-22 11:01:34,370: * pop:
-2021-11-22 11:01:34,371: test_item
-2021-11-22 11:04:43,596: "'url': 'https://i.imgur.com/213xcvs.jpg'"
-2021-11-22 11:04:43,597: Connected to Redis
-2021-11-22 11:04:43,599: * push:
-2021-11-22 11:04:43,600: 1
-2021-11-22 11:04:43,600: * pop:
-2021-11-22 11:04:43,601: test_item
-2021-11-22 11:22:19,332: {'url': 'https://i.imgur.com/213xcvs.jpg'}
-2021-11-22 11:22:19,334: Connected to Redis
-2021-11-22 11:22:19,336: * push:
-2021-11-22 11:22:19,337: 1
-2021-11-22 11:22:19,337: * pop:
-2021-11-22 11:22:19,337: test_item
-2021-11-22 11:23:46,369: {"url": "https://i.imgur.com/213xcvs.jpg"}
-2021-11-22 11:23:46,371: Connected to Redis
-2021-11-22 11:23:46,373: * push:
-2021-11-22 11:23:46,373: 1
-2021-11-22 11:23:46,373: * pop:
-2021-11-22 11:23:46,374: test_item
-2021-11-22 11:34:25,700: {"url": "https://i.imgur.com/213xcvs.jpg"}
-2021-11-22 11:34:25,702: Connected to Redis
-2021-11-22 11:34:25,704: * push:
-2021-11-22 11:34:25,705: 1
-2021-11-22 11:34:25,705: * pop:
-2021-11-22 11:34:25,705: test_item
-2021-11-23 01:48:55,494: null
-2021-11-23 01:48:55,496: Connected to Redis
-2021-11-23 01:48:55,501: * push:
-2021-11-23 01:48:55,501: 1
-2021-11-23 01:48:55,501: * pop:
-2021-11-23 01:48:55,502: test_item
-2021-11-23 01:48:55,523: Exception on /call/R [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 113, in R_post
-    return json.dumps(resp.json())
-UnboundLocalError: local variable 'resp' referenced before assignment
-2021-11-23 01:49:55,867: {"url": "https://i.imgur.com/213xcvs.jpg"}
-2021-11-23 01:49:55,868: Connected to Redis
-2021-11-23 01:49:55,870: * push:
-2021-11-23 01:49:55,871: 1
-2021-11-23 01:49:55,871: * pop:
-2021-11-23 01:49:55,871: test_item
-2021-11-23 01:49:55,891: Exception on /call/R [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 113, in R_post
-    return json.dumps(resp.json())
-UnboundLocalError: local variable 'resp' referenced before assignment
-2021-11-23 02:55:30,060: Connected to Redis
-2021-11-23 02:55:30,063: http://a53eba14af27b4920a2505c87169e06a-deef86faded1927d.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
-2021-11-23 02:57:19,707: Connected to Redis
-2021-11-23 02:57:19,709: {"i1operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "i1api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "p2operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "p2api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "p3operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "p3api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "c5operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "c5api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com"}
-2021-11-23 03:01:52,669: Connected to Redis
-2021-11-23 03:01:52,671: {"i1operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "i1api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "p2operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "p2api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "p3operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "p3api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com", "c5operator": "a8e2352d8432b40aa93e908b9bc952a5-c8d053a2526cdc9e.elb.us-east-1.amazonaws.com", "c5api": "a18cf6309f3034726880b66d56e9701c-5aac496ae619c471.elb.us-east-1.amazonaws.com"}
-2021-11-23 03:01:52,672: Exception on /off/endpoint [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 66, in offend_post
-    for key, value in endpoints.items():
-AttributeError: 'str' object has no attribute 'items'
-2021-11-23 03:04:02,619: Connected to Redis
-2021-11-23 03:04:42,795: Connected to Redis
+2021-11-23 10:58:24,425: Connected to Redis
+2021-11-23 10:58:24,429: endpoint :http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-23 10:58:24,429: * push:
+2021-11-23 10:58:24,430: 1
+2021-11-23 10:58:24,430: * pop:
+2021-11-23 10:58:24,431: 479c1e40-4c4c-11ec-9f90-0a4a64cd4f01
+2021-11-23 10:58:24,431: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-23 10:58:24,567: http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.1349seconds

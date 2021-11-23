@@ -6,6 +6,8 @@ import requests
 import time
 from rpq.RpqQueue import RpqQueue
 import redis
+import math
+import uuid
 from redis import Redis
 
 #########################################
@@ -74,6 +76,12 @@ def offmeta_post():
         return "GET"
     elif(request.method == 'POST'):
         # insert cluster offline information
+        r, queue = redis_connection()
+        #endpoints = json.dumps(request.get_json())
+        #logging.info(endpoints)
+        metas = request.get_json()
+        for key, value in metas.items():
+            r.set(key, value)
         return "off_meta"
 
 
@@ -85,25 +93,50 @@ def check_get():
 
 ##########################################
 
+def endpoint_policy(r):
+    # endpoint_policy algorithm
+    # make endpoint
+    endpoint = "http://"+r.get("i1api")+"/"+r.get("i1Rtail")
+    logging.info("endpoint :"+endpoint)
+    return endpoint
+
 @app.route("/call/R",methods=['GET', 'POST'])
 def R_post():
     if(request.method == 'GET'):
         return "GET"
     elif(request.method == 'POST'):
-      
         data = json.dumps(request.get_json())
-        logging.info(data)
-
+        #logging.info(data)
         # evaluation & select endpoint
-
         r, queue = redis_connection()
-
         # scheduler manager
 
+        # request key
+        req_uuid = str(uuid.uuid1())
+        #req_uuidrq = str(req_uuid) +"rq"
+
+        # endpoint selection policy
+        endpoint = endpoint_policy(r)
+        # request value
+        req_json = {
+                "progress" : 0, # 0 : before dispatch, 1 : after dispatch
+                "reqtype" : "R",
+                "reqdata" : data,
+                "respdata" : 0, # 0 : before dispatch, value : response data
+                "latency" : 0, # 0 : before dispatch, value : latency
+                "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
+                }
+
+        req_json = json.dumps(req_json)
+        r.set(req_uuid, req_json)
+        # insert request priority queue
         logging.info('* push:')
-        res = queue.push('test_item')
+        res = queue.push(req_uuid)
         logging.info(res)
 
+
+        # dispatcher code
+        # pop request priority queue
         logging.info('* pop:')
         item = queue.popOne()
         if item:
@@ -111,7 +144,13 @@ def R_post():
         else:
             logging.info('Queue is empty')
         #logging.info("Key {} was set at {} and has {} seconds until expired".format(keyName, keyValue, keyTTL))
+        get_json = r.get(item)
+        logging.info("get_uuid : " + get_json)
+        # delete req_uuid
+        r.delete(item)
 
+
+        start = time.time()
         try:
             resp = requests.post(
                     endpoint,
@@ -121,6 +160,9 @@ def R_post():
              )
         except Exception as e:
             print(e)
+        end = time.time()
+        elapsed = end - start
+        logging.info(endpoint + " latency: " + str(round(elapsed, 4)) + "seconds")
 
         # cortex metadata management (inflight req, avg latnecy, etc)
         # cortex endpoint management
