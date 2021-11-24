@@ -27,9 +27,6 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     logging.basicConfig(filename='logs/info.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
-
-
-endpoint = "http://a53eba14af27b4920a2505c87169e06a-deef86faded1927d.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"
 #data = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
@@ -109,7 +106,6 @@ def R_post():
         #logging.info(data)
         # evaluation & select endpoint
         r, queue = redis_connection()
-        # scheduler manager
 
         # request key
         req_uuid = str(uuid.uuid1())
@@ -134,42 +130,8 @@ def R_post():
         res = queue.push(req_uuid)
         logging.info(res)
 
-
-        # dispatcher code
-        # pop request priority queue
-        logging.info('* pop:')
-        item = queue.popOne()
-        if item:
-            logging.info(item)
-        else:
-            logging.info('Queue is empty')
-        #logging.info("Key {} was set at {} and has {} seconds until expired".format(keyName, keyValue, keyTTL))
-        get_json = r.get(item)
-        logging.info("get_uuid : " + get_json)
-        # delete req_uuid
-        r.delete(item)
-
-
-        start = time.time()
-        try:
-            resp = requests.post(
-                    endpoint,
-                    data = data,
-                    headers = headers,
-                    timeout = timeout,
-             )
-        except Exception as e:
-            print(e)
-        end = time.time()
-        elapsed = end - start
-        logging.info(endpoint + " latency: " + str(round(elapsed, 4)) + "seconds")
-
-        # cortex metadata management (inflight req, avg latnecy, etc)
-        # cortex endpoint management
-        #return uuid
-        
-        return json.dumps(resp.json())
-
+        return req_uuid
+        #return json.dumps(resp.json())
 
 if __name__ == "__main__":
 	app.run()

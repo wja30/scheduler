@@ -59,3 +59,83 @@ UnboundLocalError: local variable 'resp' referenced before assignment
 2021-11-23 10:58:24,431: 479c1e40-4c4c-11ec-9f90-0a4a64cd4f01
 2021-11-23 10:58:24,431: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
 2021-11-23 10:58:24,567: http://a84abf32be9644a43920d6d28e626872-6b478b698f7dea1a.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.1349seconds
+2021-11-24 02:10:14,611: Connected to Redis
+2021-11-24 02:14:12,573: Connected to Redis
+2021-11-24 02:15:03,891: Connected to Redis
+2021-11-24 02:15:29,587: Connected to Redis
+2021-11-24 02:15:39,590: Connected to Redis
+2021-11-24 02:15:39,599: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 02:15:39,600: * push:
+2021-11-24 02:15:39,600: 1
+2021-11-24 02:15:39,600: * pop:
+2021-11-24 02:15:39,601: 6b20a6da-4ccc-11ec-9923-0a4a64cd4f01
+2021-11-24 02:15:39,601: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 02:15:40,087: http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.4855seconds
+2021-11-24 02:17:11,687: Connected to Redis
+2021-11-24 02:17:11,690: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 02:17:11,691: * push:
+2021-11-24 02:17:11,691: 1
+2021-11-24 02:17:11,691: * pop:
+2021-11-24 02:17:11,692: a204b79a-4ccc-11ec-9923-0a4a64cd4f01
+2021-11-24 02:17:11,692: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 02:17:12,153: http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.4595seconds
+2021-11-24 03:29:15,351: Connected to Redis
+2021-11-24 03:29:15,354: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:29:15,355: * push:
+2021-11-24 03:29:15,355: 1
+2021-11-24 03:33:53,756: Connected to Redis
+2021-11-24 03:33:53,759: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:33:53,760: * push:
+2021-11-24 03:33:53,760: 1
+2021-11-24 03:41:10,679: Connected to Redis
+2021-11-24 03:41:10,682: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:41:10,682: * push:
+2021-11-24 03:41:10,683: 1
+2021-11-24 03:42:18,600: Connected to Redis
+2021-11-24 03:42:18,602: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:42:18,603: * push:
+2021-11-24 03:42:18,603: 1
+2021-11-24 03:42:19,989: Connected to Redis
+2021-11-24 03:42:19,992: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:42:19,992: * push:
+2021-11-24 03:42:19,993: 1
+2021-11-24 03:42:21,144: Connected to Redis
+2021-11-24 03:42:21,147: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:42:21,148: * push:
+2021-11-24 03:42:21,148: 1
+2021-11-24 03:42:22,300: Connected to Redis
+2021-11-24 03:42:22,302: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:42:22,303: * push:
+2021-11-24 03:42:22,303: 1
+2021-11-24 03:43:14,030: Connected to Redis
+2021-11-24 03:43:14,032: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:43:14,033: * push:
+2021-11-24 03:43:14,033: 1
+2021-11-24 03:46:00,114: Connected to Redis
+2021-11-24 03:46:00,116: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:46:00,117: * push:
+2021-11-24 03:46:00,117: 1
+2021-11-24 03:48:46,210: Connected to Redis
+2021-11-24 03:48:46,213: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:48:46,213: * push:
+2021-11-24 03:48:46,214: 1
+2021-11-24 03:50:20,516: Connected to Redis
+2021-11-24 03:50:20,519: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:50:20,520: * push:
+2021-11-24 03:50:20,520: 1
+2021-11-24 03:53:03,795: Connected to Redis
+2021-11-24 03:53:03,798: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 03:53:03,798: * push:
+2021-11-24 03:53:03,799: 1
+2021-11-24 04:00:38,570: Connected to Redis
+2021-11-24 04:00:38,573: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 04:00:38,573: * push:
+2021-11-24 04:00:38,574: 1
+2021-11-24 04:05:21,830: Connected to Redis
+2021-11-24 04:05:21,832: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 04:05:21,833: * push:
+2021-11-24 04:05:21,833: 1
+2021-11-24 04:06:41,049: Connected to Redis
+2021-11-24 04:06:41,051: endpoint :http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 04:06:41,052: * push:
+2021-11-24 04:06:41,052: 1

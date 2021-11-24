@@ -1,0 +1,46 @@
+2021-11-24 03:42:54,015: Connected to Redis
+2021-11-24 03:43:14,034: * pop:
+2021-11-24 03:43:14,034: popped uuid item :a7038ada-4cd8-11ec-9923-0a4a64cd4f01
+2021-11-24 03:43:14,035: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 03:45:31,403: Connected to Redis
+2021-11-24 03:46:00,118: * pop:
+2021-11-24 03:46:00,119: popped uuid item :0a01fa18-4cd9-11ec-9923-0a4a64cd4f01
+2021-11-24 03:46:00,119: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 03:48:08,038: Connected to Redis
+2021-11-24 03:48:46,214: * pop:
+2021-11-24 03:48:46,215: popped uuid item :6d023ed4-4cd9-11ec-9923-0a4a64cd4f01
+2021-11-24 03:48:46,215: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 03:49:53,808: Connected to Redis
+2021-11-24 03:50:20,521: * pop:
+2021-11-24 03:50:20,522: popped uuid item :a5385284-4cd9-11ec-9923-0a4a64cd4f01
+2021-11-24 03:50:20,522: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 03:50:20,522: string indices must be integers
+2021-11-24 03:52:40,968: Connected to Redis
+2021-11-24 03:53:03,799: * pop:
+2021-11-24 03:53:03,800: popped uuid item :068aad34-4cda-11ec-9923-0a4a64cd4f01
+2021-11-24 03:53:03,801: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 03:53:03,801: dispatch endpoint : g
+2021-11-24 03:53:03,801: dispatch data : p
+2021-11-24 03:53:03,802: g latency: 0.0011seconds
+2021-11-24 04:00:20,938: Connected to Redis
+2021-11-24 04:00:38,574: * pop:
+2021-11-24 04:00:38,575: popped uuid item :159bcbae-4cdb-11ec-9923-0a4a64cd4f01
+2021-11-24 04:00:38,575: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 04:00:38,575: dispatch endpoint : http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 04:00:38,575: dispatch data : {"url": "https://i.imgur.com/213xcvs.jpg"}
+2021-11-24 04:00:39,059: http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.4833seconds
+2021-11-24 04:04:19,126: Connected to Redis
+2021-11-24 04:05:21,834: * pop:
+2021-11-24 04:05:21,834: popped uuid item :be71d0a2-4cdb-11ec-9923-0a4a64cd4f01
+2021-11-24 04:05:21,835: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 04:05:21,835: dispatch endpoint : http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 04:05:21,835: dispatch data : {"url": "https://i.imgur.com/213xcvs.jpg"}
+2021-11-24 04:05:22,362: http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.5264seconds
+2021-11-24 04:05:22,362: <Response [200]> is not JSON serializable
+2021-11-24 04:06:36,695: Connected to Redis
+2021-11-24 04:06:41,053: * pop:
+2021-11-24 04:06:41,054: popped uuid item :eda9a3ae-4cdb-11ec-9923-0a4a64cd4f01
+2021-11-24 04:06:41,054: get_uuid : {"progress": 0, "reqtype": "R", "reqdata": "{\"url\": \"https://i.imgur.com/213xcvs.jpg\"}", "respdata": 0, "latency": 0, "endpoint": "http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1"}
+2021-11-24 04:06:41,054: dispatch endpoint : http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1
+2021-11-24 04:06:41,054: dispatch data : {"url": "https://i.imgur.com/213xcvs.jpg"}
+2021-11-24 04:06:41,205: http://a2ad29b117cc64991bdc3705dfb77f75-d711a8a898674a50.elb.us-east-1.amazonaws.com/image-classifier-resnet50-i1 latency: 0.1502seconds

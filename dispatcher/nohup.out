@@ -1,0 +1,4 @@
+  File "dispatcher.py", line 83
+    r.set(req_uuid, req_json)a
+                             ^
+SyntaxError: invalid syntax
