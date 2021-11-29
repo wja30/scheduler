@@ -99,6 +99,6 @@ def send_data(timeout, reader):
             pool.submit(sender, data)
             time.sleep(s/1000.0)
 
-with open(f'./tweet_load_10-16.csv', 'r') as f:
+with open(f'./tweet_load_10-16_test.csv', 'r') as f:
     reader = csv.DictReader(f)
     send_data(2,reader)
