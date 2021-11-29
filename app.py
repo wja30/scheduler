@@ -82,11 +82,22 @@ def offmeta_post():
         return "off_meta"
 
 
-@app.route("/check",methods=['GET'])
+@app.route("/check",methods=['POST'])
 def check_get():
-    if(request.method == 'GET'):
-        # async check API
-        return "check_GET"
+    if(request.method == 'POST'):
+        data = request.get_json()
+        logging.info("check_data : " + data["request_uuid"])
+        r, queue = redis_connection()
+        
+        check_result = r.get(data["request_uuid"])
+
+        logging.info("check_result : " + str(r.get(data["request_uuid"])))
+        
+        if (json.loads(check_result))["respdata"]:
+            r.delete(data["request_uuid"])
+            return (json.loads(check_result))["respdata"]
+        else:
+            return "0"
 
 ##########################################
 
