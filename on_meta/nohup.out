@@ -1,0 +1,20 @@
+  File "on_meta.py", line 39
+    def on_meta_main():
+      ^
+IndentationError: expected an indented block
+  File "on_meta.py", line 39
+    def on_meta_main():
+      ^
+IndentationError: expected an indented block
+Traceback (most recent call last):
+  File "on_meta.py", line 54, in <module>
+    on_meta_main()
+  File "on_meta.py", line 46, in on_meta_main
+    logging.info("keys : " + data)
+TypeError: cannot concatenate 'str' and 'list' objects
+Traceback (most recent call last):
+  File "on_meta.py", line 54, in <module>
+    on_meta_main()
+  File "on_meta.py", line 45, in on_meta_main
+    data = r.keys(match='*c5*')
+TypeError: keys() got an unexpected keyword argument 'match'
