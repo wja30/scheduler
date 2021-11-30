@@ -7,7 +7,7 @@ nohup python dispatcher.py &
 
 * process monitor
 
-ps -ef | grep dispatcher
+ps -ef | grep -e dispatcher -e on_meta -e gunicorn
 
 root       935     1  0 01:27 ?        00:00:00 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
 

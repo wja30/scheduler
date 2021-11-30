@@ -42,13 +42,14 @@ def dispatch(r, queue):
         logging.info('Queue is empty')
     #logging.info("Key {} was set at {} and has {} seconds until expired".format(keyName, keyValue, keyTTL))
     get_json = r.get(item)
-    logging.info("get_uuid : " + get_json)
+    logging.info("before dispatch : " + get_json)
     # delete req_uuid
     #r.delete(item)
     get_dict = json.loads(get_json)
     try:
         endpoint = get_dict["endpoint"]
         data = get_dict["reqdata"]
+        reqtype = get_dict["reqtype"]
         logging.info("dispatch endpoint : " + endpoint)
         logging.info("dispatch data : " + data)
     except Exception as e:
@@ -72,7 +73,7 @@ def dispatch(r, queue):
     try :
         req_json = {
                 "progress" : 1, # 0 : before dispatch, 1 : after dispatch
-                "reqtype" : "R",
+                "reqtype" : reqtype,
                 "reqdata" : data,
                 "respdata" : json.dumps(resp.json()), # 0 : before dispatch, value : response data
                 "latency" : elapsed, # 0 : before dispatch, value : latency
@@ -83,6 +84,7 @@ def dispatch(r, queue):
 
     try :
         req_json = json.dumps(req_json)
+        logging.info("after dispatch : " + req_json)
         req_uuid = item
         r.set(req_uuid, req_json)
     except Exception as e:
