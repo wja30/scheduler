@@ -36,7 +36,8 @@ def redis_connection():
 
 def get_meta(r, key):
     get_json = r.get(key)
-    logging.info("get_meta : " + key + " " + get_json)
+    if get_json:
+        logging.info("get_meta : " + key + " " + get_json)
 
 
 def set_meta(r, instype, reqtype, inflight, avglatency, req_sec):
@@ -58,34 +59,57 @@ def on_meta(r, queue):
     # on_meta information update (for window recent 60 seconds)
     inflight = [[0]*5 for j in range(5)]
     req_sec = [[0]*5 for j in range(5)]
+    latency = [[0.0]*5 for j in range(5)]
+    cnt = [[1]*5 for j in range(5)]
 
     base_time = time.time()
     for key in r.scan_iter("*-*"):
-        #logging.info("keys : " + key)
         get_json = r.get(key)
-        #logging.info("get uuid : " + get_json)
         get_dict = json.loads(get_json)
 
         ins_index = instype.index(get_dict["endpoint"][-2:])
         req_index = reqtype.index(get_dict["reqtype"])
-
-        # to do : each i1R, i1B, i1G summation is needed
-        inflight[ins_index][req_index] = inflight[ins_index][req_index]+1
-        # count # of request within 60secs
         
-        try:
-            if (time.time() - float(get_dict["time"]) < float(60)):
-                req_sec[ins_index][req_index] = req_sec[ins_index][req_index]+1
-        except Exception as e:
-            logging.info(e)
+        # inflight calculation
+        if get_dict["progress"] == 0:
+            inflight[ins_index][req_index] = inflight[ins_index][req_index]+1
         
+        # reqs calculation
+        if (base_time - float(get_dict["time"]) < float(60)):
+            req_sec[ins_index][req_index] = req_sec[ins_index][req_index]+1
+       
+        # avg latency calculation
         if get_dict["progress"] == 1:
-            meta_key = set_meta(r, get_dict["endpoint"][-2:], get_dict["reqtype"], inflight[ins_index][req_index], get_dict["latency"], req_sec[ins_index][req_index]) 
-            get_meta(r, meta_key)
+            latency[ins_index][req_index] += get_dict["latency"]
+            cnt[ins_index][req_index] += 1
+    for ins in instype:
+        for req in reqtype:
+            ins_index = instype.index(ins)
+            req_index = reqtype.index(req)
+            set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index]/(cnt[ins_index][req_index]), req_sec[ins_index][req_index]) 
 
+
+def inflight(r):
+    return "inflight"
+
+def latency(r):
+    return "latency"
+
+def reqs(r):
+    return "reqs"
+
+def on_meta_report(r):
+    for ins in instype:
+        for req in reqtype:
+            #logging.info(ins + req)
+            key = ins + req + "_on"
+    #        logging.info(key)
+            get_meta(r, key)
+
+    return "on_meta_report"
 
 def on_meta_main():
-    pool = ThreadPoolExecutor(1)
+    #pool = ThreadPoolExecutor(1)
     r, queue = redis_connection()
     #scan_value = r.keys("*c5*")
     #logging.info(scan_value)
@@ -94,10 +118,16 @@ def on_meta_main():
     else :
         logging.info("scan_iter return value is FALSE")
     while True:
-        #time.sleep(30)
-        if r.keys("*-*"):
-            pool.submit(on_meta, r, queue)
-            time.sleep(0.1)
+        on_meta(r, queue)
+        inflight(r)
+        latency(r)
+        reqs(r)
+        on_meta_report(r)
+        time.sleep(10)   
+       #time.sleep(30)
+        #if r.keys("*-*"):
+            #pool.submit(on_meta, r, queue)
+        #   time.sleep(0.1)
             
 if __name__ == "__main__":
 	on_meta_main()
