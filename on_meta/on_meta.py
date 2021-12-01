@@ -36,9 +36,15 @@ def redis_connection():
 
 def get_meta(r, key):
     get_json = r.get(key)
-    if get_json:
-        logging.info("get_meta : " + key + " " + get_json)
+    #if get_json:
+    #    logging.info("get_meta : " + key + " " + get_json)
+    return get_json
 
+def get_trace(r, key):
+    get_json = r.get(key)
+    if get_json:
+        logging.info("get_trace : " + key + " " + get_json)
+    return get_json
 
 def set_meta(r, instype, reqtype, inflight, avglatency, req_sec):
     try:
@@ -88,15 +94,31 @@ def on_meta(r, queue):
             req_index = reqtype.index(req)
             set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index]/(cnt[ins_index][req_index]), req_sec[ins_index][req_index]) 
 
+def trace(r):
+    for ins in instype:
+        for req in reqtype:
+            key = ins + req + "_on"
+            get_json = get_meta(r, key)
+            get_dict = json.loads(get_json)
 
-def inflight(r):
-    return "inflight"
+            current_time = time.time()
+            now = time.gmtime(current_time)
+            reqs = get_dict["req_sec"]
 
-def latency(r):
-    return "latency"
+            trace_json = {
+                    str(now.tm_year)+"-"+str(now.tm_mon)+"-"+str(now.tm_mday)+"/"+str(now.tm_hour)+":"+str(now.tm_min)+":"+str(now.tm_sec) : reqs
+                    }
 
-def reqs(r):
-    return "reqs"
+            trace_key = ins + req + "_trace"
+            get_json = get_trace(r, trace_key)
+            if get_json:
+                get_dict = json.loads(get_json)
+                get_dict.update(trace_json)
+                r.set(trace_key, json.dumps(get_dict))
+            else:
+                trace_json = json.dumps(trace_json)
+                r.set(trace_key, trace_json)
+    return "trace"
 
 def on_meta_report(r):
     for ins in instype:
@@ -104,8 +126,10 @@ def on_meta_report(r):
             #logging.info(ins + req)
             key = ins + req + "_on"
     #        logging.info(key)
-            get_meta(r, key)
-
+            get_json = get_meta(r, key)
+            if get_json:
+                logging.info("get_meta : " + key + " " + get_json)
+ 
     return "on_meta_report"
 
 def on_meta_main():
@@ -113,21 +137,18 @@ def on_meta_main():
     r, queue = redis_connection()
     #scan_value = r.keys("*c5*")
     #logging.info(scan_value)
+    cnt = 0
     if r.keys("*-*"):
         logging.info("scan_iter return value is true")
     else :
         logging.info("scan_iter return value is FALSE")
     while True:
+        time.sleep(10)
         on_meta(r, queue)
-        inflight(r)
-        latency(r)
-        reqs(r)
         on_meta_report(r)
-        time.sleep(10)   
-       #time.sleep(30)
-        #if r.keys("*-*"):
-            #pool.submit(on_meta, r, queue)
-        #   time.sleep(0.1)
-            
+        cnt+=10
+        if(cnt == 60):
+            trace(r)
+            cnt=0 
 if __name__ == "__main__":
 	on_meta_main()
