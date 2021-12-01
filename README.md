@@ -1,6 +1,12 @@
 # scheduler
 
 # operation check
+ps -ef | grep -e dispatcher -e on_meta -e gunicorn
+
+gunicorn -b 0.0.0.0:8000 app:app
+$ sudo systemctl restart nginx
+$ sudo systemctl restart helloworld
+
 
 1. offline endpoint manager 
 * post [scheduler endpoint]/off/endpoint [json body] 

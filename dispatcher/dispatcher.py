@@ -50,6 +50,7 @@ def dispatch(r, queue):
         endpoint = get_dict["endpoint"]
         data = get_dict["reqdata"]
         reqtype = get_dict["reqtype"]
+        reqtime = get_dict["time"]
         logging.info("dispatch endpoint : " + endpoint)
         logging.info("dispatch data : " + data)
     except Exception as e:
@@ -73,6 +74,7 @@ def dispatch(r, queue):
     try :
         req_json = {
                 "progress" : 1, # 0 : before dispatch, 1 : after dispatch
+                "time" : reqtime,
                 "reqtype" : reqtype,
                 "reqdata" : data,
                 "respdata" : json.dumps(resp.json()), # 0 : before dispatch, value : response data
@@ -86,7 +88,7 @@ def dispatch(r, queue):
         req_json = json.dumps(req_json)
         logging.info("after dispatch : " + req_json)
         req_uuid = item
-        r.set(req_uuid, req_json)
+        r.set(req_uuid, req_json, 60) # after 60 seconds expire
     except Exception as e:
         logging.info(e)
 

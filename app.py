@@ -94,7 +94,7 @@ def check_get():
         logging.info("check_result : " + str(r.get(data["request_uuid"])))
         
         if (json.loads(check_result))["respdata"]:
-            r.delete(data["request_uuid"])
+            #r.delete(data["request_uuid"])
             return (json.loads(check_result))["respdata"]
         else:
             return "0"
@@ -127,6 +127,7 @@ def R_post():
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
+                "time" : time.time(), # set current time (request insert time)
                 "reqtype" : "R",
                 "reqdata" : data,
                 "respdata" : 0, # 0 : before dispatch, value : response data
@@ -135,7 +136,7 @@ def R_post():
                 }
 
         req_json = json.dumps(req_json)
-        r.set(req_uuid, req_json)
+        r.set(req_uuid, req_json, 60) #// expire after 60 seconds
         # insert request priority queue
         logging.info('* push:')
         res = queue.push(req_uuid)
