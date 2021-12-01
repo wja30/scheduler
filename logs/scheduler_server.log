@@ -13,18 +13,3 @@ Traceback (most recent call last):
   File "/usr/lib/python3.6/json/__init__.py", line 348, in loads
     'not {!r}'.format(s.__class__.__name__))
 TypeError: the JSON object must be str, bytes or bytearray, not 'NoneType'
-Exception on /check [POST]
-Traceback (most recent call last):
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 2073, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1518, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1516, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/ubuntu/.local/lib/python3.6/site-packages/flask/app.py", line 1502, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/ubuntu/scheduler/app.py", line 96, in check_get
-    if (json.loads(check_result))["respdata"]:
-  File "/usr/lib/python3.6/json/__init__.py", line 348, in loads
-    'not {!r}'.format(s.__class__.__name__))
-TypeError: the JSON object must be str, bytes or bytearray, not 'NoneType'

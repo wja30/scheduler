@@ -2,3 +2,4 @@ __pycache__/
 logs/*
 generator/logs/*
 dispatcher/logs/*
+on_meta/logs/*
