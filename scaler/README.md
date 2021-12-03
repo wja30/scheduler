@@ -2,12 +2,13 @@
 * execution method
 
 nohup python scaler.py &
+nohup python trainer.py &
 
 [1] 4400
 
 * process monitor
 
-ps -ef | grep -e dispatcher -e on_meta -e gunicorn -e scaler
+ps -ef | grep -e dispatcher -e on_meta -e gunicorn -e scaler -e trainer
 
 * train
 

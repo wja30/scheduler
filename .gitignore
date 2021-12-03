@@ -6,3 +6,6 @@ on_meta/logs/*
 generator/*.csv
 scaler/*.log
 scaler/logs/*
+scaler/*.out
+scaler/*.h5
+scaler/*.csv

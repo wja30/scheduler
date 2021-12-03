@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from time import time
 import csv
@@ -23,6 +25,8 @@ import numpy as np
 import tensorflow.keras as ks
 import pandas as pd
 import logging
+
+logging.basicConfig(filename='logs/scaler.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
 def forecast_lstm(model, X):
         X = X.reshape(1, 1, len(X))
@@ -54,7 +58,7 @@ buf = [0]
 timeout = 2 # two elements prediction (e.g 60sec + 60sec)
 modelfile = "52_my_model_32.h5"
 original_file = "./test_trace.csv"
-result_file = "./predic_result.csv"
+result_file = "./predict_result.csv"
 future_min = 5 # predict after furture_min minutes
 #############################################################################################################
 
@@ -80,6 +84,7 @@ with open(original_file, 'r') as fr:
         if reader.line_num > timeout_real:
             break
         print(f'reader.line_num : {reader.line_num}')
+        logging.info(f'reader.line_num : {reader.line_num}')
         with open(result_file, 'a') as fw:
                 buf2 = ['']
                 last_step = buf[reader.line_num-1]

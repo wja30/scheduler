@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # the script used to train the predictor
 
 from time import time

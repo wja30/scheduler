@@ -16,7 +16,7 @@ import redis
 from rpq.RpqQueue import RpqQueue
 import subprocess
 
-logging.basicConfig(filename='logs/scaler.log', level=logging.INFO,format='%(asctime)s: %(message)s')
+logging.basicConfig(filename='logs/trainer.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
 
 def redis_connection():
@@ -29,18 +29,16 @@ def redis_connection():
     queue = RpqQueue(rq, 'simple_queue')
     return r, queue
 
-def scaler(r):
-    #train execution
-    subprocess.call("./predict.py", shell=True)
-    return "scaler"
-
-
-def scaler_main():
+def trainer(r):
+    subprocess.call("./train.py", shell=True)
+    return "trainer"
+ 
+def trainer_main():
     r, queue = redis_connection()
     cnt = 0
     while True:
-        scaler(r)
+        trainer(r)
         time.sleep(30)
 
 if __name__ == "__main__":
-    scaler_main()
+   trainer_main()
