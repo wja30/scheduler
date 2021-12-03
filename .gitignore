@@ -4,3 +4,5 @@ generator/logs/*
 dispatcher/logs/*
 on_meta/logs/*
 generator/*.csv
+scaler/*.log
+scaler/logs/*

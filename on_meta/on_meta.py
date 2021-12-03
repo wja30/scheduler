@@ -143,11 +143,11 @@ def on_meta_main():
     else :
         logging.info("scan_iter return value is FALSE")
     while True:
-        time.sleep(10)
+        time.sleep(10) # every 10 seconds, meta data is updated (# of reqs in 60secons / avglatency / inflight request)
         on_meta(r, queue)
         on_meta_report(r)
         cnt+=10
-        if(cnt == 60):
+        if(cnt == 60): # every 60 seconds, # of reqs in 60 seconds is written to trace file (redis)
             trace(r)
             cnt=0 
 if __name__ == "__main__":
