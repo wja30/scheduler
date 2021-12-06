@@ -47,7 +47,7 @@ def sender(data):
 
     request_uuid = json.dumps({'request_uuid' : req_uuid})
     #time.sleep(1)
-    
+'''    
     while True:
         try :
             time.sleep(0.1)
@@ -64,7 +64,7 @@ def sender(data):
         if resp.text == "0":
             continue
         break
-
+'''
 def send_data(timeout, reader):
     pool = ThreadPoolExecutor(5000)
     data = ""

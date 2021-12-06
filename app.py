@@ -166,7 +166,7 @@ def R_post():
                 }
 
         req_json = json.dumps(req_json)
-        r.set(req_uuid, req_json, 60) #// expire after 60 seconds
+        r.set(req_uuid, req_json, 60)  #// expire after 60 seconds
         # insert request priority queue
         logging.info('* push:')
         res = queue.push(req_uuid)
