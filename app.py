@@ -163,10 +163,11 @@ def R_post():
                 "respdata" : 0, # 0 : before dispatch, value : response data
                 "latency" : 0, # 0 : before dispatch, value : latency
                 "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
+                "metric_check" : 0, # 0 : before metric (e.g. reqs) check, 1 : after metric check
                 }
 
         req_json = json.dumps(req_json)
-        r.set(req_uuid, req_json, 60)  #// expire after 60 seconds
+        r.set(req_uuid, req_json) #// expire after 60 seconds
         # insert request priority queue
         logging.info('* push:')
         res = queue.push(req_uuid)
