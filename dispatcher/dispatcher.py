@@ -48,6 +48,7 @@ def dispatch(r, queue):
     get_dict = json.loads(get_json)
     try:
         endpoint = get_dict["endpoint"]
+        metric_check = get_dict["metric_check"]
         data = get_dict["reqdata"]
         reqtype = get_dict["reqtype"]
         reqtime = get_dict["time"]
@@ -80,6 +81,7 @@ def dispatch(r, queue):
                 "respdata" : json.dumps(resp.json()), # 0 : before dispatch, value : response data
                 "latency" : elapsed, # 0 : before dispatch, value : latency
                 "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
+                "metric_check" : metric_check, # 0 : before metric check, 1 : after check
                 }
     except Exception as e:
         logging.info(e)
@@ -88,7 +90,7 @@ def dispatch(r, queue):
         req_json = json.dumps(req_json)
         logging.info("after dispatch : " + req_json)
         req_uuid = item
-        r.set(req_uuid, req_json, 60) # after 60 seconds expire
+        r.set(req_uuid, req_json) # after 60 seconds expire
     except Exception as e:
         logging.info(e)
 
