@@ -23,6 +23,7 @@ timeout = 60
 windown = 60 # 60 sec
 instype = ["i1", "p2", "p3", "c5"]
 reqtype = ["R", "B", "G", "Y", "S"]
+total_reqs = 0
 
 def redis_connection():
     r = redis.StrictRedis(host='23.23.220.207', port=6379, decode_responses=True, password='redisscheduler')
@@ -120,6 +121,7 @@ def trace(r):
                 r.set(trace_key, trace_json)
     return "trace"
 
+# for 10 seconds, inflight, avglatency, # of reqs in 60 seconds
 def on_meta_report(r):
     for ins in instype:
         for req in reqtype:
@@ -131,6 +133,10 @@ def on_meta_report(r):
                 logging.info("get_meta : " + key + " " + get_json)
  
     return "on_meta_report"
+
+# summation : total avglatency, total slo violation rate
+def on_meta_summation(r):
+    return "on_meta_summation"
 
 def on_meta_main():
     #pool = ThreadPoolExecutor(1)
@@ -144,11 +150,12 @@ def on_meta_main():
         logging.info("scan_iter return value is FALSE")
     while True:
         time.sleep(10) # every 10 seconds, meta data is updated (# of reqs in 60secons / avglatency / inflight request)
-        on_meta(r, queue)
+        on_meta(r, queue) # collect metrics (inflight, avg_latency, res)
         on_meta_report(r)
+        on_meta_summation(r) # summation : total avglatency, total slo violation rate
         cnt+=10
         if(cnt == 60): # every 60 seconds, # of reqs in 60 seconds is written to trace file (redis)
-            trace(r)
+            #trace(r)
             cnt=0 
 if __name__ == "__main__":
 	on_meta_main()

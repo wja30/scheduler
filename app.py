@@ -31,6 +31,8 @@ if not app.debug:
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60
+instype = ["i1", "p2", "p3", "c5"]
+reqtype = ["R", "B", "G", "Y", "S"]
 ##########################################
 
 def test():
@@ -99,14 +101,42 @@ def check_get():
         else:
             return "0"
 
-##########################################
+################################################################
 
-def endpoint_policy(r):
+# MAEL endpoint_policy
+def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
+    score = [[0.0]*1 for j in range(4)]
+    inf_latency = [[0.0]*1 for j in range(4)]
+    wait_time = [[0.0]*1 for j in range(4)]
+
+    # extract inf_latency and wait_time
+    for ins in instype:
+        ins_index = instype.index(ins)
+        key = instype[ins_index] + reqtype
+        inf_latency[ins_index] = float(r.get(key+"_inf_latency"))
+        get_dict = json.loads(r.get(key+"_on"))
+        wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
+
+    # evaluate score each instype
+    for ins in instype:
+        ins_index = instype.index(ins)
+        score[ins_index] = 1/(float(inf_latency[ins_index]) + float(wait_time[ins_index]))
+
+    # select max score
+    ins_index = score.index(max(score))
+
     # make endpoint
-    endpoint = "http://"+r.get("i1api")+"/"+r.get("i1Rtail")
+    endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
+
+'''
+# SLO_MAEL endpoint_policy
+def endpoint_policy(r, reqtype):
+    return "endpoint_SLO_MALE"
+'''
+#################################################################
 
 @app.route("/call/R",methods=['GET', 'POST'])
 def R_post():
@@ -123,7 +153,7 @@ def R_post():
         #req_uuidrq = str(req_uuid) +"rq"
 
         # endpoint selection policy
-        endpoint = endpoint_policy(r)
+        endpoint = endpoint_policy(r, "R")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
