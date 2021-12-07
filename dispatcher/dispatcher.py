@@ -95,7 +95,7 @@ def dispatch(r, queue):
         logging.info(e)
 
 def dispatch_main():
-    pool = ThreadPoolExecutor(5000)
+    pool = ThreadPoolExecutor(10000)
     r, queue = redis_connection()
     while True:
         if queue.count() > 0:

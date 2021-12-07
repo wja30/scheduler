@@ -35,8 +35,6 @@ instype = ["i1", "p2", "p3", "c5"]
 reqtype = ["R", "B", "G", "Y", "S"]
 ##########################################
 
-def test():
-    logging.info("test")
 
 
 def redis_connection():
@@ -88,12 +86,12 @@ def offmeta_post():
 def check_get():
     if(request.method == 'POST'):
         data = request.get_json()
-        logging.info("check_data : " + data["request_uuid"])
+        #logging.info("check_data : " + data["request_uuid"])
         r, queue = redis_connection()
         
         check_result = r.get(data["request_uuid"])
 
-        logging.info("check_result : " + str(r.get(data["request_uuid"])))
+        #logging.info("check_result : " + str(r.get(data["request_uuid"])))
         
         if (json.loads(check_result))["respdata"]:
             #r.delete(data["request_uuid"])
@@ -102,13 +100,12 @@ def check_get():
             return "0"
 
 ################################################################
-
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
-    score = [[0.0]*1 for j in range(4)]
-    inf_latency = [[0.0]*1 for j in range(4)]
-    wait_time = [[0.0]*1 for j in range(4)]
+    score = [0.0 for j in range(4)]
+    inf_latency = [0.0 for j in range(4)]
+    wait_time = [0.0 for j in range(4)]
 
     # extract inf_latency and wait_time
     for ins in instype:
@@ -121,8 +118,12 @@ def endpoint_policy(r, reqtype):
     # evaluate score each instype
     for ins in instype:
         ins_index = instype.index(ins)
-        score[ins_index] = 1/(float(inf_latency[ins_index]) + float(wait_time[ins_index]))
+        score[ins_index] += 1/(float(inf_latency[ins_index]) + float(wait_time[ins_index]))
 
+    for ins in instype:
+        ins_index = instype.index(ins)
+        logging.info("score :" + str(score[ins_index]))
+ 
     # select max score
     ins_index = score.index(max(score))
 
@@ -130,11 +131,48 @@ def endpoint_policy(r, reqtype):
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-
 '''
-# SLO_MAEL endpoint_policy
+
+# SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
-    return "endpoint_SLO_MALE"
+    # endpoint_policy algorithm
+    score = [0.0 for j in range(4)]
+    inf_latency = [0.0 for j in range(4)]
+    wait_time = [0.0 for j in range(4)]
+    score_slo = [0.0 for j in range(4)]
+
+    # extract inf_latency and wait_time
+    for ins in instype:
+        ins_index = instype.index(ins)
+        key = instype[ins_index] + reqtype
+        inf_latency[ins_index] = float(r.get(key+"_inf_latency"))
+        get_dict = json.loads(r.get(key+"_on"))
+        wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
+
+    # evaluate score each instype
+    for ins in instype:
+        ins_index = instype.index(ins)
+        slo = float(r.get(reqtype+"_SLO_ms"))
+        exp_l = (float(inf_latency[ins_index]) + float(wait_time[ins_index]))
+        if exp_l > slo:
+            score_slo[ins_index] -= exp_l/slo
+        else:
+            score[ins_index] += 1/exp_l
+        if score_slo[ins_index] < 0:
+            score[ins_index] = score_slo[ins_index]
+
+    # for debugging
+    for ins in instype:
+        ins_index = instype.index(ins)
+        logging.info("score :" + str(score[ins_index]))
+ 
+    # select max score
+    ins_index = score.index(max(score))
+
+    # make endpoint
+    endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
+    logging.info("endpoint :"+endpoint)
+    return endpoint
 '''
 #################################################################
 
@@ -169,9 +207,9 @@ def R_post():
         req_json = json.dumps(req_json)
         r.set(req_uuid, req_json) #// expire after 60 seconds
         # insert request priority queue
-        logging.info('* push:')
+        #logging.info('* push:')
         res = queue.push(req_uuid)
-        logging.info(res)
+        #logging.info(res)
 
         return req_uuid
         #return json.dumps(resp.json())
