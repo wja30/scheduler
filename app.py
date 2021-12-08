@@ -100,6 +100,7 @@ def check_get():
             return "0"
 
 ################################################################
+'''
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
@@ -133,6 +134,7 @@ def endpoint_policy(r, reqtype):
     return endpoint
 '''
 
+'''
 # SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
@@ -174,6 +176,54 @@ def endpoint_policy(r, reqtype):
     logging.info("endpoint :"+endpoint)
     return endpoint
 '''
+
+# latencyGAP-SLO-MAEL endpoint_policy
+def endpoint_policy(r, reqtype):
+    # endpoint_policy algorithm
+    score = [0.0 for j in range(4)]
+    inf_latency = [0.0 for j in range(4)]
+    wait_time = [0.0 for j in range(4)]
+    score_slo = [0.0 for j in range(4)]
+    avg_latency = [0.0 for j in range(4)]
+
+    # extract inf_latency and wait_time
+    for ins in instype:
+        ins_index = instype.index(ins)
+        key = instype[ins_index] + reqtype
+        inf_latency[ins_index] = float(r.get(key+"_inf_latency"))
+        get_dict = json.loads(r.get(key+"_on"))
+        wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
+        avg_latency[ins_index] = float(get_dict["avglatency"])*1000.0
+
+    # evaluate score each instype
+    for ins in instype:
+        ins_index = instype.index(ins)
+        slo = float(r.get(reqtype+"_SLO_ms"))
+        if (avg_latency[ins_index] > 0.0): # if real-time avglatency is higher than 0.0
+            exp_l = avg_latency[ins_index]
+        else: 
+            exp_l = (float(inf_latency[ins_index]) + float(wait_time[ins_index]))
+        if slo >= exp_l:
+            score[ins_index] += (slo - exp_l)
+        else:
+            score[ins_index] += (slo - exp_l)
+
+
+    # for debugging
+    for ins in instype:
+        ins_index = instype.index(ins)
+        logging.info("score :" + str(score[ins_index]))
+ 
+    # select max score
+    ins_index = score.index(max(score))
+
+    # make endpoint
+    endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
+    logging.info("endpoint :"+endpoint)
+    return endpoint
+
+
+
 #################################################################
 
 @app.route("/call/R",methods=['GET', 'POST'])

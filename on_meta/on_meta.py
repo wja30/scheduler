@@ -67,10 +67,13 @@ def on_meta(r, queue, window):
     inflight = [[0]*5 for j in range(5)]
     req_sec = [[0]*5 for j in range(5)]
     latency = [[0.0]*5 for j in range(5)]
-    cnt = [[1]*5 for j in range(5)] # 0 -> 1 for prevent divided by zero : latency / cnt
+    cnt = [[0]*5 for j in range(5)] # 0 -> 1 for prevent divided by zero : latency / cnt
     slo_violate_cnt = [[0]*5 for j in range(5)]
+    first_check = [[0]*5 for j in range(5)] 
 
     base_time = time.time()
+
+
     for key in r.scan_iter("*-*"):
         get_json = r.get(key)
         get_dict = json.loads(get_json)
@@ -132,9 +135,10 @@ def on_meta(r, queue, window):
         for req in reqtype:
             ins_index = instype.index(ins)
             req_index = reqtype.index(req)
-            set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index]/(cnt[ins_index][req_index]), req_sec[ins_index][req_index]) 
+            if cnt[ins_index][req_index] > 0:
+                set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index]/(cnt[ins_index][req_index]), req_sec[ins_index][req_index]) 
             #if(window == 59): # every 60 seconds : 0 -> 10 -> 20 -> 30 -> 40 -> 50
-            on_meta_summation(r, req, cnt[ins_index][req_index]-1, latency[ins_index][req_index], slo_violate_cnt[ins_index][req_index])
+                on_meta_summation(r, req, cnt[ins_index][req_index], latency[ins_index][req_index], slo_violate_cnt[ins_index][req_index])
 
 # (60sec window) summation : total avglatency, total slo violation rate
 def on_meta_summation(r, req, reqs, latencies, slo_violate_cnt):
@@ -143,19 +147,23 @@ def on_meta_summation(r, req, reqs, latencies, slo_violate_cnt):
     req_key = req + "_total_reqs"
     latency_key = req + "_avg_latency"
     slo_key = req + "_slo_vio_rate"
+    vio_cnt_key = req + "_slo_vio_cnt"
 
     now_reqs = int(r.get(req_key))
     now_latencies = float(r.get(latency_key)) * float(now_reqs)
     now_slo_vio_rate = float(r.get(slo_key)) * float(now_reqs)
+    now_vio_cnt = int(r.get(vio_cnt_key))
 
     now_reqs += int(reqs)
     now_latencies += float(latencies)
     now_slo_vio_rate += float(slo_violate_cnt)
+    now_vio_cnt += int(slo_violate_cnt) 
 
     if(now_reqs != 0):
         r.set(req_key, now_reqs)
         r.set(latency_key, now_latencies / float(now_reqs))
         r.set(slo_key, now_slo_vio_rate / float(now_reqs))
+        r.set(vio_cnt_key, now_vio_cnt)
 
     return "on_meta_summation"
 
@@ -210,7 +218,7 @@ def on_meta_main():
     else :
         logging.info("scan_iter return value is FALSE")
     while True:
-        time.sleep(1) # every 1 seconds, meta data is updated (# of reqs in 60secons / avglatency / inflight request)
+        time.sleep(1/100) # every 1 seconds, meta data is updated (# of reqs in 60secons / avglatency / inflight request)
         on_meta(r, queue, cnt) # collect metrics (inflight, avg_latency, res)
         on_meta_report(r)
         cnt+=1
