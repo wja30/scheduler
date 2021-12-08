@@ -66,7 +66,7 @@ def sender(data):
         break
 '''
 def send_data(timeout, reader):
-    pool = ThreadPoolExecutor(5000)
+    pool = ThreadPoolExecutor(100000)
     data = ""
     global number_reqs
     
