@@ -91,11 +91,13 @@ def dispatch(r, queue):
         logging.info("after dispatch : " + req_json)
         req_uuid = item
         r.set(req_uuid, req_json) # after 60 seconds expire
+        #r.expire(req_uuid, 10)
+        #logging.info("ttl : " + str(r.ttl(req_uuid)))
     except Exception as e:
         logging.info(e)
 
 def dispatch_main():
-    pool = ThreadPoolExecutor(10000)
+    pool = ThreadPoolExecutor(100000)
     r, queue = redis_connection()
     while True:
         if queue.count() > 0:

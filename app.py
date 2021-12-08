@@ -132,9 +132,9 @@ def endpoint_policy(r, reqtype):
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-'''
 
 '''
+
 # SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
@@ -175,8 +175,8 @@ def endpoint_policy(r, reqtype):
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-'''
 
+'''
 # latencyGAP-SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
@@ -221,7 +221,7 @@ def endpoint_policy(r, reqtype):
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-
+'''
 
 
 #################################################################
@@ -237,7 +237,7 @@ def R_post():
         r, queue = redis_connection()
 
         # request key
-        req_uuid = str(uuid.uuid1())
+        req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
 
         # endpoint selection policy

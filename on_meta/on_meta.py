@@ -62,7 +62,7 @@ def set_meta(r, instype, reqtype, inflight, avglatency, req_sec):
         logging.info(e)
     return meta_key
 
-def on_meta(r, queue, window):
+def on_meta(r, queue):
     # on_meta information update (for window recent 60 seconds)
     inflight = [[0]*5 for j in range(5)]
     req_sec = [[0]*5 for j in range(5)]
@@ -76,6 +76,8 @@ def on_meta(r, queue, window):
 
     for key in r.scan_iter("*-*"):
         get_json = r.get(key)
+        if get_json is None: # if expired item is occured
+            break
         get_dict = json.loads(get_json)
 
         ins_index = instype.index(get_dict["endpoint"][-2:])
@@ -126,7 +128,7 @@ def on_meta(r, queue, window):
                 req_json = json.dumps(req_json)
                 #logging.info("after dispatch : " + req_json)
                 req_uuid = key
-                r.set(req_uuid, req_json) # after 60 seconds expire
+                r.set(req_uuid, req_json, 20) # after 60 seconds expire
             except Exception as e:
                 logging.info(e)
 
@@ -139,7 +141,9 @@ def on_meta(r, queue, window):
                 set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index]/(cnt[ins_index][req_index]), req_sec[ins_index][req_index]) 
             #if(window == 59): # every 60 seconds : 0 -> 10 -> 20 -> 30 -> 40 -> 50
                 on_meta_summation(r, req, cnt[ins_index][req_index], latency[ins_index][req_index], slo_violate_cnt[ins_index][req_index])
-
+            elif cnt[ins_index][req_index] == 0:
+                set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index], req_sec[ins_index][req_index]) 
+ 
 # (60sec window) summation : total avglatency, total slo violation rate
 def on_meta_summation(r, req, reqs, latencies, slo_violate_cnt):
     
@@ -212,18 +216,19 @@ def on_meta_main():
     r, queue = redis_connection()
     #scan_value = r.keys("*c5*")
     #logging.info(scan_value)
-    cnt = 0
+    loopcnt = 0.0
     if r.keys("*-*"):
         logging.info("scan_iter return value is true")
     else :
         logging.info("scan_iter return value is FALSE")
     while True:
-        time.sleep(1/100) # every 1 seconds, meta data is updated (# of reqs in 60secons / avglatency / inflight request)
-        on_meta(r, queue, cnt) # collect metrics (inflight, avg_latency, res)
-        on_meta_report(r)
-        cnt+=1
-        if(cnt == 60): # every 60 seconds, # of reqs in 60 seconds is written to trace file (redis)
+        #time.sleep(0.01) # every 1 seconds, meta data is updated (# of reqs in 60secons / avglatency / inflight request)
+        on_meta(r, queue) # collect metrics (inflight, avg_latency, res)
+        loopcnt += (0.1)
+        logging.info("loopcnt : "+str(loopcnt))
+        if(loopcnt > 0.5): # every 60 seconds, # of reqs in 60 seconds is written to trace file (redis)
+            on_meta_report(r)
             #trace(r)
-            cnt=0 
+            loopcnt= 0.0 
 if __name__ == "__main__":
 	on_meta_main()
