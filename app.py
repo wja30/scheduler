@@ -28,8 +28,8 @@ if not app.debug:
     logging.basicConfig(filename='logs/info.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
 #data = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
-headers = {"content-type": "application/json"}
-headers_binary = {"content-type": "application/octet-stream"}
+headers = {"content-type": "application/json"}# for R, B, G, S
+headers_binary = {"content-type": "application/octet-stream"}# for Y
 timeout = 60
 instype = ["i1", "p2", "p3", "c5"]
 reqtype = ["R", "B", "G", "Y", "S"]
@@ -100,7 +100,6 @@ def check_get():
             return "0"
 
 ################################################################
-'''
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
@@ -133,8 +132,8 @@ def endpoint_policy(r, reqtype):
     logging.info("endpoint :"+endpoint)
     return endpoint
 
-'''
 
+'''
 # SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
@@ -175,7 +174,7 @@ def endpoint_policy(r, reqtype):
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-
+'''
 '''
 # latencyGAP-SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
@@ -235,11 +234,9 @@ def R_post():
         #logging.info(data)
         # evaluation & select endpoint
         r, queue = redis_connection()
-
         # request key
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
-
         # endpoint selection policy
         endpoint = endpoint_policy(r, "R")
         # request value
@@ -253,16 +250,49 @@ def R_post():
                 "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
                 "metric_check" : 0, # 0 : before metric (e.g. reqs) check, 1 : after metric check
                 }
-
         req_json = json.dumps(req_json)
         r.set(req_uuid, req_json) #// expire after 60 seconds
         # insert request priority queue
         #logging.info('* push:')
         res = queue.push(req_uuid)
         #logging.info(res)
-
         return req_uuid
-        #return json.dumps(resp.json())
 
+@app.route("/call/B",methods=['GET', 'POST'])
+def B_post():
+    if(request.method == 'GET'):
+        return "GET"
+    elif(request.method == 'POST'):
+        data = json.dumps(request.get_json())
+        #logging.info(data)
+        # evaluation & select endpoint
+        r, queue = redis_connection()
+        # request key
+        req_uuid = str(uuid.uuid4())
+        #req_uuidrq = str(req_uuid) +"rq"
+        # endpoint selection policy
+        endpoint = endpoint_policy(r, "B")
+        # request value
+        req_json = {
+                "progress" : 0, # 0 : before dispatch, 1 : after dispatch
+                "time" : time.time(), # set current time (request insert time)
+                "reqtype" : "B",
+                "reqdata" : data,
+                "respdata" : 0, # 0 : before dispatch, value : response data
+                "latency" : 0, # 0 : before dispatch, value : latency
+                "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
+                "metric_check" : 0, # 0 : before metric (e.g. reqs) check, 1 : after metric check
+                }
+        req_json = json.dumps(req_json)
+        r.set(req_uuid, req_json) #// expire after 60 seconds
+        # insert request priority queue
+        #logging.info('* push:')
+        res = queue.push(req_uuid)
+        #logging.info(res)
+        return req_uuid
+
+
+
+####################################################################
 if __name__ == "__main__":
 	app.run()

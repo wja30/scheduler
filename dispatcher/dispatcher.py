@@ -17,8 +17,8 @@ from rpq.RpqQueue import RpqQueue
 
 logging.basicConfig(filename='logs/dispatch.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
-headers = {"content-type": "application/json"}
-headers_binary = {"content-type": "application/octet-stream"}
+headers = {"content-type": "application/json"}# for R, B, G, S
+headers_binary = {"content-type": "application/octet-stream"}# for Y
 timeout = 60
 
 def redis_connection():
@@ -51,6 +51,8 @@ def dispatch(r, queue):
         metric_check = get_dict["metric_check"]
         data = get_dict["reqdata"]
         reqtype = get_dict["reqtype"]
+        if reqtype == "Y":
+            headers = headers_binary
         reqtime = get_dict["time"]
         logging.info("dispatch endpoint : " + endpoint)
         logging.info("dispatch data : " + data)
