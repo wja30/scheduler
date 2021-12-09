@@ -9,7 +9,7 @@ import random
 import requests
 import boto3, json
 import numpy as np
-
+from urllib import request
 import logging
 from redis import Redis
 import uuid
@@ -21,50 +21,74 @@ logging.basicConfig(filename='logs/sender.log', level=logging.INFO,format='%(asc
 
 global number_reqs
 number_reqs = 0
-endpoint = "http://34.233.80.127/call/R"
-endpoint_check = "http://34.233.80.127/check"
+url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/silence.wav"
+endpoint = "http://34.233.80.127/call/"
+reqtype = ["R", "B", "G", "Y", "S"]
+reqratio = [20, 20, 20, 20, 20] # req ratio (R : B : G : Y : S)
+#endpoint_check = "http://34.233.80.127/check"
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60
 payloadR = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
+payloadB = json.dumps({'review': 'the movie was amazing!'})
+payloadG = json.dumps({'text': 'machine learning is'})
+payloadY = request.urlopen(url).read()
+payloadS = json.dumps({
+    "sepal_length": 5.2,
+    "sepal_width": 3.6,
+    "petal_length": 1.4,
+    "petal_width": 0.3})
 
 def sender(data):
+    # x : R, B, G, Y, S
+    logging.info("sender")
+    x = random.randrange(0, 100)
+    logging.info("beforex : " + str(x))
     try:
+        if(x >=0 and x < reqratio[0]):
+            x = 0
+        if(x >= reqratio[0] and x < reqratio[0] + reqratio[1]):
+            x = 1
+        if(x >= reqratio[0] + reqratio[1] and x < reqratio[0] + reqratio[1] + reqratio[2]):
+            x = 2
+        if(x >= reqratio[0] + reqratio[1] + reqratio[2] and x < reqratio[0] + reqratio[1] + reqratio[2]+ reqratio[3]):
+            x = 3
+        if(x >= reqratio[0] + reqratio[1] + reqratio[2]+ reqratio[3] and x < reqratio[0] + reqratio[1] + reqratio[2]+ reqratio[3] + reqratio[4]):
+            x = 4
+    except Exception as e:
+        logging.info(e)
+    logging.info("afterx : " + str(x))
+    newendpoint =  endpoint + str(reqtype[x]) # when R(image-resnet50 calls)
+    logging.info("newendpoint :" + newendpoint)
+    
+    try:
+        if reqtype[x] == "R":
+            payload = payloadR
+        elif reqtype[x] == "B":
+            payload = payloadB
+        elif reqtype[x] == "G":
+            payload = payloadG
+        elif reqtype[x] == "Y":
+            payload = payloadY
+            headers = headers_binary
+        elif reqtype[x] == "S":
+            payload = payloadS
+
         resp = requests.post(
-                endpoint,
-                data = payloadR,
+                newendpoint,
+                data = payload,
                 headers = headers,
                 timeout = timeout,
                 )
     except Exception as e:
         print(e)
-    
     try :
         req_uuid = resp.text
         logging.info("req_uuid : " + req_uuid)
     except Exception as e:
         print(e)
-
     request_uuid = json.dumps({'request_uuid' : req_uuid})
-    #time.sleep(1)
-'''    
-    while True:
-        try :
-            time.sleep(0.1)
-            resp = requests.post(
-                    endpoint_check,
-                    data = request_uuid,
-                    headers = headers,
-                    timeout = timeout,
-                    )
-            if (resp.text != "0"):
-                logging.info("req_result : " + resp.text)
-        except Exception as e:
-            print(e)
-        if resp.text == "0":
-            continue
-        break
-'''
+
 def send_data(timeout, reader):
     pool = ThreadPoolExecutor(100000)
     data = ""
@@ -91,14 +115,21 @@ def send_data(timeout, reader):
         print(f'line: {reader.line_num}; sample_number: {num}')
         print(f'lam : {lam}')
         print(f'samples : {samples}')
-        print(len(samples))
-        for s in samples:
-            number_reqs += 1
-            if number_reqs % 100 == 0:
-                print(f'number_reqs : {number_reqs}')
-            pool.submit(sender, data)
-            time.sleep(s/1000.0)
+        print(f'bug : {len(samples)}')
+        logging.info("test")
+        try:
+            for s in samples:
+                number_reqs += 1
+                if number_reqs % 100 == 0:
+                    print(f'number_reqs : {number_reqs}')
+                logging.info("bofore pool")
+                pool.submit(sender, data)
+                logging.info("after pool")
+                time.sleep(s/1000.0)
+        except Exception as e:
+            logging.info(e)
 
 with open(f'./tweet_load_10-16_test.csv', 'r') as f:
     reader = csv.DictReader(f)
     send_data(2,reader)
+
