@@ -24,11 +24,12 @@ number_reqs = 0
 url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/silence.wav"
 endpoint = "http://34.233.80.127/call/"
 reqtype = ["R", "B", "G", "Y", "S"]
-reqratio = [20, 20, 20, 20, 20] # req ratio (R : B : G : Y : S)
+reqratio = [0, 100, 0, 0, 0] # req ratio (R : B : G : Y : S)
 #endpoint_check = "http://34.233.80.127/check"
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60
+payload = ""
 payloadR = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
 payloadB = json.dumps({'review': 'the movie was amazing!'})
 payloadG = json.dumps({'text': 'machine learning is'})
@@ -61,19 +62,18 @@ def sender(data):
     newendpoint =  endpoint + str(reqtype[x]) # when R(image-resnet50 calls)
     logging.info("newendpoint :" + newendpoint)
     
+    if str(reqtype[x]) == "R":
+        payload = payloadR
+    elif str(reqtype[x]) == "B":
+        payload = payloadB
+    elif str(reqtype[x]) == "G":
+        payload = payloadG
+    elif str(reqtype[x]) == "Y":
+        payload = payloadY
+    elif str(reqtype[x]) == "S":
+        payload = payloadS
+    
     try:
-        if reqtype[x] == "R":
-            payload = payloadR
-        elif reqtype[x] == "B":
-            payload = payloadB
-        elif reqtype[x] == "G":
-            payload = payloadG
-        elif reqtype[x] == "Y":
-            payload = payloadY
-            headers = headers_binary
-        elif reqtype[x] == "S":
-            payload = payloadS
-
         resp = requests.post(
                 newendpoint,
                 data = payload,
