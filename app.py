@@ -100,6 +100,7 @@ def check_get():
             return "0"
 
 ################################################################
+'''
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
@@ -131,9 +132,8 @@ def endpoint_policy(r, reqtype):
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-
-
 '''
+
 # SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
     # endpoint_policy algorithm
@@ -174,7 +174,6 @@ def endpoint_policy(r, reqtype):
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-'''
 '''
 # latencyGAP-SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype):
@@ -221,7 +220,6 @@ def endpoint_policy(r, reqtype):
     logging.info("endpoint :"+endpoint)
     return endpoint
 '''
-
 
 #################################################################
 

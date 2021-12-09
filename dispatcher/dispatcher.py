@@ -17,9 +17,10 @@ from rpq.RpqQueue import RpqQueue
 
 logging.basicConfig(filename='logs/dispatch.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
-headers = {"content-type": "application/json"}# for R, B, G, S
-headers_binary = {"content-type": "application/octet-stream"}# for Y
+headers = {"content-type": "application/json"}
+headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60
+header_data = ""
 
 def redis_connection():
     r = Redis(host='23.23.220.207', port=6379, decode_responses=True, password='redisscheduler')
@@ -51,20 +52,23 @@ def dispatch(r, queue):
         metric_check = get_dict["metric_check"]
         data = get_dict["reqdata"]
         reqtype = get_dict["reqtype"]
-        if reqtype == "Y":
-            headers = headers_binary
         reqtime = get_dict["time"]
         logging.info("dispatch endpoint : " + endpoint)
         logging.info("dispatch data : " + data)
     except Exception as e:
         logging.info(e)
 
+    if reqtype == "Y":
+        header_data = headers_binary
+    else:
+        header_data = headers
+
     start = time.time()
     try:
         resp = requests.post(
                 endpoint,
                 data = data,
-                headers = headers,
+                headers = header_data,
                 timeout = timeout,
             )
     except Exception as e:
@@ -72,7 +76,15 @@ def dispatch(r, queue):
     end = time.time()
     elapsed = end - start
     logging.info(endpoint + " latency: " + str(round(elapsed, 4)) + "seconds")
-
+    
+    logging.info("resp : " + str(resp))
+    
+    if reqtype == "R":
+        resp = json.dumps(resp.json())
+    elif reqtype == "B":
+        resp = resp.text
+    # todo "G","Y","S"
+    
     # request value
     try :
         req_json = {
@@ -80,7 +92,7 @@ def dispatch(r, queue):
                 "time" : reqtime,
                 "reqtype" : reqtype,
                 "reqdata" : data,
-                "respdata" : json.dumps(resp.json()), # 0 : before dispatch, value : response data
+                "respdata" : resp, # 0 : before dispatch, value : response data
                 "latency" : elapsed, # 0 : before dispatch, value : latency
                 "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
                 "metric_check" : metric_check, # 0 : before metric check, 1 : after check
