@@ -14,9 +14,14 @@ import uuid
 import math
 import redis
 from rpq.RpqQueue import RpqQueue
+from urllib2 import urlopen
+#from urllib.request import urlopen
+#from urllib import request
+#from urllib.request import Request, urlopen
 
 logging.basicConfig(filename='logs/dispatch.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
+url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/silence.wav"
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60
@@ -58,11 +63,15 @@ def dispatch(r, queue):
     except Exception as e:
         logging.info(e)
 
-    if reqtype == "Y":
-        header_data = headers_binary
-    else:
-        header_data = headers
-
+    try:
+        if reqtype == "Y":
+            header_data = headers_binary
+            data = urlopen(url).read() 
+        else:
+            header_data = headers
+    except Exception as e:
+        logging.info(e)
+    
     start = time.time()
     try:
         resp = requests.post(
@@ -85,6 +94,12 @@ def dispatch(r, queue):
         resp = resp.text
     elif reqtype == "G":
         resp = resp.text
+    elif reqtype == "Y":
+        resp = resp.text
+        data = ""
+    elif reqtype == "S":
+        resp = resp.text
+
     # todo "G","Y","S"
     
     # request value

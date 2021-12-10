@@ -320,6 +320,73 @@ def G_post():
         #logging.info(res)
         return req_uuid
 
+@app.route("/call/Y",methods=['GET', 'POST'])
+def Y_post():
+    if(request.method == 'GET'):
+        return "GET"
+    elif(request.method == 'POST'):
+        #data = request.get_data() # binary data is extracted from get_data()
+        data = ""
+        #logging.info(data)
+        # evaluation & select endpoint
+        r, queue = redis_connection()
+        # request key
+        req_uuid = str(uuid.uuid4())
+        #req_uuidrq = str(req_uuid) +"rq"
+        # endpoint selection policy
+        endpoint = endpoint_policy(r, "Y")
+        # request value
+        req_json = {
+                "progress" : 0, # 0 : before dispatch, 1 : after dispatch
+                "time" : time.time(), # set current time (request insert time)
+                "reqtype" : "Y",
+                "reqdata" : data,
+                "respdata" : 0, # 0 : before dispatch, value : response data
+                "latency" : 0, # 0 : before dispatch, value : latency
+                "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
+                "metric_check" : 0, # 0 : before metric (e.g. reqs) check, 1 : after metric check
+                }
+        req_json = json.dumps(req_json)
+        r.set(req_uuid, req_json, 60) #// expire after 60 seconds
+        # insert request priority queue
+        #logging.info('* push:')
+        res = queue.push(req_uuid)
+        #logging.info(res)
+        return req_uuid
+
+@app.route("/call/S",methods=['GET', 'POST'])
+def S_post():
+    if(request.method == 'GET'):
+        return "GET"
+    elif(request.method == 'POST'):
+        data = json.dumps(request.get_json())
+        #logging.info(data)
+        # evaluation & select endpoint
+        r, queue = redis_connection()
+        # request key
+        req_uuid = str(uuid.uuid4())
+        #req_uuidrq = str(req_uuid) +"rq"
+        # endpoint selection policy
+        endpoint = endpoint_policy(r, "S")
+        # request value
+        req_json = {
+                "progress" : 0, # 0 : before dispatch, 1 : after dispatch
+                "time" : time.time(), # set current time (request insert time)
+                "reqtype" : "S",
+                "reqdata" : data,
+                "respdata" : 0, # 0 : before dispatch, value : response data
+                "latency" : 0, # 0 : before dispatch, value : latency
+                "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
+                "metric_check" : 0, # 0 : before metric (e.g. reqs) check, 1 : after metric check
+                }
+        req_json = json.dumps(req_json)
+        r.set(req_uuid, req_json, 60) #// expire after 60 seconds
+        # insert request priority queue
+        #logging.info('* push:')
+        res = queue.push(req_uuid)
+        #logging.info(res)
+        return req_uuid
+
 
 
 ####################################################################
