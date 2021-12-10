@@ -83,6 +83,8 @@ def dispatch(r, queue):
         resp = json.dumps(resp.json())
     elif reqtype == "B":
         resp = resp.text
+    elif reqtype == "G":
+        resp = resp.text
     # todo "G","Y","S"
     
     # request value
