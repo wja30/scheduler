@@ -24,7 +24,7 @@ number_reqs = 0
 url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/silence.wav"
 endpoint = "http://34.233.80.127/call/"
 reqtype = ["R", "B", "G", "Y", "S"]
-reqratio = [0, 0, 100, 0, 0] # req ratio (R : B : G : Y : S)
+reqratio = [0, 0, 0, 0, 100] # req ratio (R : B : G : Y : S)
 #endpoint_check = "http://34.233.80.127/check"
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
@@ -34,12 +34,7 @@ payloadR = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
 payloadB = json.dumps({'review': 'the movie was amazing!'})
 payloadG = json.dumps({'text': 'machine learning is'})
 payloadY = request.urlopen(url).read()
-payloadS = json.dumps({
-    "sepal_length": 5.2,
-    "sepal_width": 3.6,
-    "petal_length": 1.4,
-    "petal_width": 0.3})
-
+payloadS = json.dumps({'url': 'https://i.imgur.com/PzXprwl.jpg'})
 def sender(data):
     # x : R, B, G, Y, S
     logging.info("sender")
