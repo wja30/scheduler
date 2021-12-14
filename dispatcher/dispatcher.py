@@ -21,7 +21,7 @@ from urllib2 import urlopen
 
 logging.basicConfig(filename='logs/dispatch.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
-url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/silence.wav"
+url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/mia.wav"
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60

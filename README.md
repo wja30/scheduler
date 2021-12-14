@@ -3,7 +3,7 @@
 # operation check
 ps -ef | grep -e dispatcher -e on_meta -e gunicorn
 
-gunicorn -b 0.0.0.0:8000 app:app
+gunicorn -b 0.0.0.0:8000 app:app -w 100 --threads 100
 $ sudo systemctl restart nginx
 $ sudo systemctl restart helloworld
 

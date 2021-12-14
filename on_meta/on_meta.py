@@ -128,7 +128,8 @@ def on_meta(r, queue):
                 req_json = json.dumps(req_json)
                 #logging.info("after dispatch : " + req_json)
                 req_uuid = key
-                r.set(req_uuid, req_json, 20) # after 60 seconds expire
+                #r.set(req_uuid, req_json, 1) # after 60 seconds expire
+                r.delete(req_uuid)
             except Exception as e:
                 logging.info(e)
 
@@ -140,34 +141,38 @@ def on_meta(r, queue):
             if cnt[ins_index][req_index] > 0:
                 set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index]/(cnt[ins_index][req_index]), req_sec[ins_index][req_index]) 
             #if(window == 59): # every 60 seconds : 0 -> 10 -> 20 -> 30 -> 40 -> 50
-                on_meta_summation(r, req, cnt[ins_index][req_index], latency[ins_index][req_index], slo_violate_cnt[ins_index][req_index])
+                on_meta_summation(r, ins, req, cnt[ins_index][req_index], latency[ins_index][req_index], slo_violate_cnt[ins_index][req_index])
             elif cnt[ins_index][req_index] == 0:
                 set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index], req_sec[ins_index][req_index]) 
  
 # (60sec window) summation : total avglatency, total slo violation rate
-def on_meta_summation(r, req, reqs, latencies, slo_violate_cnt):
+def on_meta_summation(r, ins, req, reqs, latencies, slo_violate_cnt):
     
     logging.info("summation starts")
     req_key = req + "_total_reqs"
     latency_key = req + "_avg_latency"
     slo_key = req + "_slo_vio_rate"
     vio_cnt_key = req + "_slo_vio_cnt"
+    ins_vio_cnt_key = ins + req + "_slo_vio_cnt"
 
     now_reqs = int(r.get(req_key))
     now_latencies = float(r.get(latency_key)) * float(now_reqs)
     now_slo_vio_rate = float(r.get(slo_key)) * float(now_reqs)
     now_vio_cnt = int(r.get(vio_cnt_key))
+    now_ins_vio_cnt = int(r.get(ins_vio_cnt_key))
 
     now_reqs += int(reqs)
     now_latencies += float(latencies)
     now_slo_vio_rate += float(slo_violate_cnt)
     now_vio_cnt += int(slo_violate_cnt) 
+    now_ins_vio_cnt += int(slo_violate_cnt)
 
     if(now_reqs != 0):
         r.set(req_key, now_reqs)
         r.set(latency_key, now_latencies / float(now_reqs))
         r.set(slo_key, now_slo_vio_rate / float(now_reqs))
         r.set(vio_cnt_key, now_vio_cnt)
+        r.set(ins_vio_cnt_key, now_ins_vio_cnt)
 
     return "on_meta_summation"
 
