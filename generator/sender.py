@@ -21,10 +21,10 @@ logging.basicConfig(filename='logs/sender.log', level=logging.INFO,format='%(asc
 
 global number_reqs
 number_reqs = 0
-url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/silence.wav"
+url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/mia.wav"
 endpoint = "http://34.233.80.127/call/"
 reqtype = ["R", "B", "G", "Y", "S"]
-reqratio = [0, 0, 0, 0, 100] # req ratio (R : B : G : Y : S)
+reqratio = [100, 0, 0, 0, 0] # req ratio (R : B : G : Y : S)
 #endpoint_check = "http://34.233.80.127/check"
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
@@ -83,9 +83,10 @@ def sender(data):
     except Exception as e:
         print(e)
     request_uuid = json.dumps({'request_uuid' : req_uuid})
+    return "0"
 
 def send_data(timeout, reader):
-    pool = ThreadPoolExecutor(100000)
+    pool = ThreadPoolExecutor(5000)
     data = ""
     global number_reqs
     
