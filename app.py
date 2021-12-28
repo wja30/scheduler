@@ -127,6 +127,9 @@ def endpoint_policy(r, reqtype):
     # select max score
     ins_index = score.index(max(score))
 
+    # for testing autoscaling
+    ins_index = 0 # TOBE DELETED
+
     # make endpoint
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)

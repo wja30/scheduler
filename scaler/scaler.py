@@ -40,7 +40,7 @@ def scaler_main():
     cnt = 0
     while True:
         scaler(r)
-        time.sleep(30)
+        time.sleep(10)
 
 if __name__ == "__main__":
     scaler_main()
