@@ -127,5 +127,5 @@ def send_data(timeout, reader):
 
 with open(f'./tweet_load_10-16_test.csv', 'r') as f:
     reader = csv.DictReader(f)
-    send_data(2,reader)
+    send_data(5,reader)
 
