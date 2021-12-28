@@ -25,6 +25,9 @@ import numpy as np
 import tensorflow.keras as ks
 import pandas as pd
 import logging
+import time
+import redis
+from redis import Redis
 
 logging.basicConfig(filename='logs/scaler.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
@@ -60,47 +63,51 @@ modelfile = "52_my_model_32.h5"
 original_file = "./test_trace.csv"
 result_file = "./predict_result.csv"
 future_min = 5 # predict after furture_min minutes
+instype = ["i1", "p2", "p3", "c5"]
+reqtype = ["R", "B", "G", "Y", "S"]
+
 #############################################################################################################
 
+def redis_connection():
+    r = Redis(host='23.23.220.207', port=6379, decode_responses=True, password='redisscheduler')
+    if r.ping():
+        logging.info("Connected to Redis")
+    return r 
 
-with open(original_file, 'r') as f:
-    timeout_buf = timeout + 2
-    reader = csv.DictReader(f)
-    for row in reader:
-        if reader.line_num > timeout_buf:
-            break
-        buf.append(int(row['tweets']))
-        last_step = int(row['tweets'])
-        current_load = int(row['tweets'])
-        print(f'original_trace[{reader.line_num-1}mins] : {buf[reader.line_num-1]}')
-
-with open(original_file, 'r') as fr:
-    timeout_real = timeout + 1
-    reader = csv.DictReader(fr)
+def lstm_predict(last_step, current_load, future_min):
     buf2 = ['']
-    with open(result_file, 'w') as fw:
-        fw.write("\"time\",\"tweets_predict\"\n") # real write to file
-    for row in reader:
-        if reader.line_num > timeout_real:
-            break
-        print(f'reader.line_num : {reader.line_num}')
-        logging.info(f'reader.line_num : {reader.line_num}')
-        with open(result_file, 'a') as fw:
-                buf2 = ['']
-                last_step = buf[reader.line_num-1]
-                current_load = buf[reader.line_num]
-                x = [[(current_load - last_step)]]
-                last_step = current_load
-                x=np.asarray(x)
-                x.reshape(-1, 1)
-                y = scaler.transform(x)
-                forecast = forecast_lstm(model, y)
-                forecast_real = inverse_transform(scaler, forecast, current_load)
+    x = [[(current_load - last_step)]]
+    last_step = current_load
+    x=np.asarray(x)
+    x.reshape(-1, 1)
+    y = scaler.transform(x)
+    forecast = forecast_lstm(model, y)
+    forecast_real = inverse_transform(scaler, forecast, current_load)
 
-                for index, value in enumerate(forecast_real):
-                    if index > future_min:
-                       break
-                    buf2.append(int(value))
-                for index, val in enumerate(buf2):
-                    print(f'future_min[after {index}mins] : {val}')
-                fw.write("\"" + row['time'] +"\"" + "," + str(buf2[future_min]) + "\n") # real write to file
+    for index, value in enumerate(forecast_real):
+        if index > future_min:
+            break
+        buf2.append(int(value))
+    for index, val in enumerate(buf2):
+        print(f'future_min[after {index}mins] : {val}')
+    return buf2[future_min] 
+
+if __name__ == "__main__":
+    r = redis_connection()
+    last_step = 233
+    current_load = 270
+    #future_min = 5
+    result = lstm_predict(last_step, current_load, future_min)
+#    print(f'last : {last_step}, current : {current_load}, result : {result}')
+
+    for reqType in reqtype:
+        trace_starttime = r.get(reqType+"_start_time")
+        if trace_starttime != "0": # reqtype request is ocurred
+            count_key_cursor = int(r.get(reqType+"_trace_cursor"))
+            if count_key_cursor >= 2: # at least greater than 2 : last_step : 0_R_trace, current : 1_R_trace
+                last_step = r.get(str(count_key_cursor-2)+"_"+reqType+"_trace")
+                current_load = r.get(str(count_key_cursor-1)+"_"+reqType+"_trace")
+                result = lstm_predict(int(last_step), int(current_load), future_min)
+                print(f'reqtype : {reqType} last : {last_step}, current : {current_load}, result : {result}')
+
+
