@@ -222,6 +222,28 @@ def endpoint_policy(r, reqtype):
 '''
 #################################################################
 
+#maintaine R_start_time, R_trace_cursor, [1,2,3...]_R_trace
+def trace_request(r, reqtype):
+    # count number of requests in 60 mins
+    trace_starttime = r.get(reqtype+"_start_time")
+    if trace_starttime == "0":
+        r.set(reqtype+"_start_time", time.time())
+        trace_starttime = r.get(reqtype+"_start_time")
+    passed_time = (int(float(time.time())) - int(float(trace_starttime)))/60 # for minutes base
+    passed_time = str(int(passed_time))
+    count_key = passed_time + "_" + reqtype + "_trace"
+    # cursor value setting
+    r.set(reqtype+"_trace_cursor", passed_time)
+    count_key_value = r.get(count_key)
+    if not count_key_value:
+        r.set(count_key, 0)
+        count_key_value = r.get(count_key)
+    count_key_value = int(count_key_value) + 1
+    r.set(count_key, count_key_value, 360) # expire 360 seconds
+
+
+#################################################################
+
 @app.route("/call/R",methods=['GET', 'POST'])
 def R_post():
     if(request.method == 'GET'):
@@ -253,6 +275,8 @@ def R_post():
         #logging.info('* push:')
         res = queue.push(req_uuid)
         #logging.info(res)
+        # reqtype tracing
+        trace_request(r, "R")
         return req_uuid
 
 @app.route("/call/B",methods=['GET', 'POST'])
