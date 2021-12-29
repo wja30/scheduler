@@ -31,7 +31,7 @@ def redis_connection():
 
 def scaler(r):
     #train execution
-    subprocess.call("./predict.py", shell=True)
+    subprocess.call("./scaler/predict.py", shell=True)
     return "scaler"
 
 

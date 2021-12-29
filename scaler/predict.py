@@ -17,6 +17,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 # from keras.callbacks import TensorBoard
 from math import sqrt
+import math
 import matplotlib
 matplotlib.use('agg')
 from matplotlib import pyplot
@@ -54,15 +55,15 @@ def inverse_transform(scaler, forecast, current_load):
     return inv_diff
 
 ##############################################################################################################
-model = ks.models.load_model("52_my_model_32.h5")
-scaler = joblib.load("my_scaler.save")
+model = ks.models.load_model("./scaler/52_my_model_32.h5")
+scaler = joblib.load("./scaler/my_scaler.save")
 #############################################################################################################
 buf = [0]
 timeout = 2 # two elements prediction (e.g 60sec + 60sec)
-modelfile = "52_my_model_32.h5"
+modelfile = "./scaler/52_my_model_32.h5"
 original_file = "./test_trace.csv"
 result_file = "./predict_result.csv"
-future_min = 5 # predict after furture_min minutes
+future_min = 10 # predict after furture_min minutes
 instype = ["i1", "p2", "p3", "c5"]
 reqtype = ["R", "B", "G", "Y", "S"]
 
@@ -75,7 +76,7 @@ def redis_connection():
     return r 
 
 def lstm_predict(last_step, current_load, future_min):
-    buf2 = ['']
+    buf2 = [0]
     x = [[(current_load - last_step)]]
     last_step = current_load
     x=np.asarray(x)
@@ -90,14 +91,67 @@ def lstm_predict(last_step, current_load, future_min):
         buf2.append(int(value))
     for index, val in enumerate(buf2):
         print(f'future_min[after {index}mins] : {val}')
-    return buf2[future_min] 
+    return buf2[buf2.index(max(buf2))]
+    #return buf2[future_min] 
 
+def scaling_policy(r, result, reqType): # based on predicted reqType's # of reqs in 60 mins determine policy of auto scaling
+
+    total_capacity = [0,0,0,0,0] # for each reqtype, total capacity is needed [R, B, G, Y, S]
+    scaler = [0,0,0,0] # for each reqtype, store the predicted the number of instance  [i1, p2, p3, c5]
+    cost = [0,0,0,0]
+    performance = [0,0,0,0]
+    score = [0.0 for j in range(4)] # for each reqtype, scoring for each instance [i1, p2, p3, c5]
+    req_index = reqtype.index(reqType)
+    
+
+    # to determine autoscaling poloicy, extract offline information
+    for ins in instype:
+        ins_index = instype.index(ins)
+        total_capacity[req_index] += int(r.get(ins+reqType+"_reqs_satiSLO_60sec"))
+        cost[ins_index] = float(r.get(ins+"_cost_$_hour"))
+        performance[ins_index] = float(r.get(ins+reqType+"_reqs_satiSLO_60sec"))
+        exp_l = (float(cost[ins_index]) / float(performance[ins_index]))
+        score[ins_index] += 1/exp_l # 성능/비용
+
+    # for debugging
+    for ins in instype:
+        ins_index = instype.index(ins)
+        logging.info("scaling score :" + str(score[ins_index]))
+        print(f'scaling sorce :{ins} : {score[ins_index]}') 
+    # select max score
+    max_ins_index = score.index(max(score))
+
+    # determine scaling_policy
+    if total_capacity[req_index] > result:
+        # if total_capacity is sufficient (assumption : i1*1, p2*1, p3*1, c5*1)
+        for ins in instype:
+            scaler_value = r.get(ins+reqType+"_scaler")
+            if int(scaler_value) > 1:
+                scaler_value = int(scaler_value) - 1
+            #scaler_value = 1
+            # nothing done (depends on cortex autoscalnig stabilization)
+            r.set(ins+reqType+"_scaler", scaler_value)
+            print(f'scaler value :{ins}: {scaler_value}')
+    elif total_capacity[req_index] < result:
+        # if total_capacity is not sufficeint -> autoscaling triggered
+        for ins in instype:
+            scaler_value = r.get(ins+reqType+"_scaler")
+            scaler_update_value = 1 + math.ceil( (result - total_capacity[req_index]) / performance[max_ins_index] )
+            if instype.index(ins) != max_ins_index:
+                r.set(ins+reqType+"_scaler", scaler_value)
+                print(f'scaler update value : {ins} : {scaler_value}')
+            elif instype.index(ins) == max_ins_index: # only performance/cost value max is selected
+                r.set(ins+reqType+"_scaler", scaler_update_value)
+                print(f'scaler update value : {ins} : {scaler_update_value}')
+       
+        
+      
 if __name__ == "__main__":
     r = redis_connection()
-    last_step = 233
-    current_load = 270
+#    last_step = 100
+#    current_load = 1000
     #future_min = 5
-    result = lstm_predict(last_step, current_load, future_min)
+#    result = lstm_predict(last_step, current_load, future_min)
 #    print(f'last : {last_step}, current : {current_load}, result : {result}')
 
     for reqType in reqtype:
@@ -107,7 +161,14 @@ if __name__ == "__main__":
             if count_key_cursor >= 2: # at least greater than 2 : last_step : 0_R_trace, current : 1_R_trace
                 last_step = r.get(str(count_key_cursor-2)+"_"+reqType+"_trace")
                 current_load = r.get(str(count_key_cursor-1)+"_"+reqType+"_trace")
+                if last_step is None:
+                    last_step = 0
+                    current_load = 0
+                #if current_load is None:
+                #    current_load = 0
                 result = lstm_predict(int(last_step), int(current_load), future_min)
-                print(f'reqtype : {reqType} last : {last_step}, current : {current_load}, result : {result}')
+                delta = int(current_load) - int(last_step)
+                print(f'reqtype : {reqType} last : {last_step}, current : {current_load}, result : {result}, delta {delta}')
+                scaling_policy(r, result, reqType)
 
 

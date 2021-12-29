@@ -8,7 +8,7 @@ nohup python trainer.py &
 
 * process monitor
 
-ps -ef | grep -e dispatcher -e on_meta -e gunicorn -e scaler -e trainer
+ps -ef | grep -e dispatcher -e on_meta -e gunicorn -e scaler
 
 * train
 

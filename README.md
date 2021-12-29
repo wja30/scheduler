@@ -1,7 +1,13 @@
 # scheduler
 
 # operation check
-ps -ef | grep -e dispatcher -e on_meta -e gunicorn
+ps -ef | grep -e dispatcher -e on_meta -e gunicorn -e scaler
+
+# execution all process
+./exe.sh
+
+# deleting all process
+./exedel.sh
 
 gunicorn -b 0.0.0.0:8000 app:app -w 100 --threads 100
 $ sudo systemctl restart nginx
