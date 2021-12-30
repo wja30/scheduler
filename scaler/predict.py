@@ -63,7 +63,7 @@ timeout = 2 # two elements prediction (e.g 60sec + 60sec)
 modelfile = "./scaler/52_my_model_32.h5"
 original_file = "./test_trace.csv"
 result_file = "./predict_result.csv"
-future_min = 10 # predict after furture_min minutes
+future_min = 15 # predict after furture_min minutes
 instype = ["i1", "p2", "p3", "c5"]
 reqtype = ["R", "B", "G", "Y", "S"]
 
@@ -78,7 +78,7 @@ def redis_connection():
 def lstm_predict(last_step, current_load, future_min):
     buf2 = [0]
     x = [[(current_load - last_step)]]
-    last_step = current_load
+    #last_step = current_load
     x=np.asarray(x)
     x.reshape(-1, 1)
     y = scaler.transform(x)
@@ -91,7 +91,18 @@ def lstm_predict(last_step, current_load, future_min):
         buf2.append(int(value))
     for index, val in enumerate(buf2):
         print(f'future_min[after {index}mins] : {val}')
-    return buf2[buf2.index(max(buf2))]
+    result_max = buf2[buf2.index(max(buf2[1:]))]
+    print(f'result_max : {result_max}')
+    result_min = buf2[buf2.index(min(buf2[1:]))]
+    print(f'result_min : {result_min}')
+    result_delta = (result_max - result_min)
+    print(f'result_delta : {result_delta}')
+    if (current_load > last_step): # if traffic is increasing, result_delta plusing
+        result = result_max + result_delta*6
+    else:
+        result = result_max
+    print(f'lstm_result : {result}')
+    return result     
     #return buf2[future_min] 
 
 def scaling_policy(r, result, reqType): # based on predicted reqType's # of reqs in 60 mins determine policy of auto scaling

@@ -98,7 +98,7 @@ def on_meta(r, queue):
             slo = float(r.get(slo_key))/1000
             if get_dict["latency"] > slo : # if slo violation
                 slo_violate_cnt[ins_index][req_index] += 1
-            cnt[ins_index][req_index] += 1
+            cnt[ins_index][req_index] += 1 # e.g. R_total_reqs : means measure the request count except timeout (60seconds) -> because progress value can not be "1"
 
             progress = get_dict["progress"]
             reqtime = get_dict["time"]

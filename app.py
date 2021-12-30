@@ -234,13 +234,18 @@ def trace_request(r, reqtype):
     count_key = passed_time + "_" + reqtype + "_trace"
     # cursor value setting
     r.set(reqtype+"_trace_cursor", passed_time)
+    
+    r.incr(count_key)
+    r.expire(count_key, 360)
+
+'''
     count_key_value = r.get(count_key)
     if not count_key_value:
         r.set(count_key, 0)
         count_key_value = r.get(count_key)
     count_key_value = int(count_key_value) + 1
     r.set(count_key, count_key_value, 360) # expire 360 seconds
-
+'''
 
 #################################################################
 
@@ -253,6 +258,7 @@ def R_post():
         #logging.info(data)
         # evaluation & select endpoint
         r, queue = redis_connection()
+        trace_request(r, "R") # maintain R_Start_time, R_trace_cursor, tracing request
         # request key
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
@@ -270,13 +276,13 @@ def R_post():
                 "metric_check" : 0, # 0 : before metric (e.g. reqs) check, 1 : after metric check
                 }
         req_json = json.dumps(req_json)
-        r.set(req_uuid, req_json, 60) #// expire after 60 seconds
+        r.set(req_uuid, req_json, 60) #// expire after 60 seconds (if expire 60s -> inflight count is correct, if no expire 60s=no expires -> inflight count is not correct, but time out reqs count value is remained in infklight value)
         # insert request priority queue
         #logging.info('* push:')
         res = queue.push(req_uuid)
         #logging.info(res)
         # reqtype tracing
-        trace_request(r, "R")
+        #trace_request(r, "R")
         return req_uuid
 
 @app.route("/call/B",methods=['GET', 'POST'])
