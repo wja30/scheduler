@@ -101,11 +101,12 @@ def check_get():
 
 ################################################################
 # MAEL endpoint_policy
-def endpoint_policy(r, reqtype):
+def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
     score = [0.0 for j in range(4)]
     inf_latency = [0.0 for j in range(4)]
     wait_time = [0.0 for j in range(4)]
+    scaling_ins_sum = 0
 
     # extract inf_latency and wait_time
     for ins in instype:
@@ -113,7 +114,14 @@ def endpoint_policy(r, reqtype):
         key = instype[ins_index] + reqtype
         inf_latency[ins_index] = float(r.get(key+"_inf_latency"))
         get_dict = json.loads(r.get(key+"_on"))
+        scaling_ins_sum += int(r.get(ins+reqtype+"_scaler")) # if autoscaling trigger total number of ins 
+        scaling_ins = int(r.get(ins+reqtype+"_scaler")) # if autoscaling triggered, number of ins
         wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
+        if ins == "i1": # for fixing cortex memeory bug ,decresing i1 scores
+            wait_time[ins_index] = wait_time[ins_index] * (3.0)
+        if (auto == "on" and scaling_ins > 1): # autoscaling on and scaling instance is larger than 2, wait time is recalculated
+            for i in range(scaling_ins-1):
+                wait_time[ins_index] = wait_time[ins_index] * (0.9)
 
     # evaluate score each instype
     for ins in instype:
@@ -136,7 +144,7 @@ def endpoint_policy(r, reqtype):
     return endpoint
 '''
 # SLO-MAEL endpoint_policy
-def endpoint_policy(r, reqtype):
+def endpoint_policy(r, reqtype, auto="off"):
     # endpoint_policy algorithm
     score = [0.0 for j in range(4)]
     inf_latency = [0.0 for j in range(4)]
@@ -176,7 +184,7 @@ def endpoint_policy(r, reqtype):
     logging.info("endpoint :"+endpoint)
     return endpoint
 # latencyGAP-SLO-MAEL endpoint_policy
-def endpoint_policy(r, reqtype):
+def endpoint_policy(r, reqtype, auto="off"):
     # endpoint_policy algorithm
     score = [0.0 for j in range(4)]
     inf_latency = [0.0 for j in range(4)]
@@ -263,7 +271,7 @@ def R_post():
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "R")
+        endpoint = endpoint_policy(r, "R", "on") # autoscaling on : "on", autoscaling off : "off"
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch

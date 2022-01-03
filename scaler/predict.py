@@ -75,7 +75,7 @@ def redis_connection():
         logging.info("Connected to Redis")
     return r 
 
-def lstm_predict(last_step, current_load, future_min):
+def lstm_predict(last_step, current_load, future_min, reqtype):
     buf2 = [0]
     x = [[(current_load - last_step)]]
     #last_step = current_load
@@ -98,7 +98,10 @@ def lstm_predict(last_step, current_load, future_min):
     result_delta = (result_max - result_min)
     print(f'result_delta : {result_delta}')
     if (current_load > last_step): # if traffic is increasing, result_delta plusing
-        result = result_max + result_delta*6
+        if reqtype == "R":
+            result = result_max + result_delta*5
+        elif reqtype == "B":
+            result = result_max + result_delta*5
     else:
         result = result_max
     print(f'lstm_result : {result}')
@@ -177,7 +180,7 @@ if __name__ == "__main__":
                     current_load = 0
                 #if current_load is None:
                 #    current_load = 0
-                result = lstm_predict(int(last_step), int(current_load), future_min)
+                result = lstm_predict(int(last_step), int(current_load), future_min, reqType)
                 delta = int(current_load) - int(last_step)
                 print(f'reqtype : {reqType} last : {last_step}, current : {current_load}, result : {result}, delta {delta}')
                 scaling_policy(r, result, reqType)
