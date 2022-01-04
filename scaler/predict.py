@@ -99,9 +99,9 @@ def lstm_predict(last_step, current_load, future_min, reqtype):
     print(f'result_delta : {result_delta}')
     if (current_load > last_step): # if traffic is increasing, result_delta plusing
         if reqtype == "R":
-            result = result_max + result_delta*5
-        elif reqtype == "B":
-            result = result_max + result_delta*5
+            result = result_max + result_delta*10
+        elif reqtype == "B" or "G" or "Y" or "S":
+            result = result_max + result_delta*10
     else:
         result = result_max
     print(f'lstm_result : {result}')

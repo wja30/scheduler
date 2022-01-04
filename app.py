@@ -118,10 +118,10 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
         scaling_ins = int(r.get(ins+reqtype+"_scaler")) # if autoscaling triggered, number of ins
         wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
         if ins == "i1": # for fixing cortex memeory bug ,decresing i1 scores
-            wait_time[ins_index] = wait_time[ins_index] * (3.0)
+            wait_time[ins_index] = wait_time[ins_index] * wait_time[ins_index]
         if (auto == "on" and scaling_ins > 1): # autoscaling on and scaling instance is larger than 2, wait time is recalculated
             for i in range(scaling_ins-1):
-                wait_time[ins_index] = wait_time[ins_index] * (0.9)
+                wait_time[ins_index] = wait_time[ins_index] * (0.8)
 
     # evaluate score each instype
     for ins in instype:
@@ -302,11 +302,12 @@ def B_post():
         #logging.info(data)
         # evaluation & select endpoint
         r, queue = redis_connection()
+        trace_request(r, "B") # maintain R_Start_time, R_trace_cursor, tracing request
         # request key
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "B")
+        endpoint = endpoint_policy(r, "B", "on")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
@@ -335,11 +336,12 @@ def G_post():
         #logging.info(data)
         # evaluation & select endpoint
         r, queue = redis_connection()
+        trace_request(r, "G") # maintain R_Start_time, R_trace_cursor, tracing request
         # request key
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "G")
+        endpoint = endpoint_policy(r, "G", "on")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
@@ -369,11 +371,12 @@ def Y_post():
         #logging.info(data)
         # evaluation & select endpoint
         r, queue = redis_connection()
+        trace_request(r, "Y") # maintain R_Start_time, R_trace_cursor, tracing request
         # request key
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "Y")
+        endpoint = endpoint_policy(r, "Y", "on")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
@@ -402,11 +405,12 @@ def S_post():
         #logging.info(data)
         # evaluation & select endpoint
         r, queue = redis_connection()
+        trace_request(r, "S") # maintain R_Start_time, R_trace_cursor, tracing request
         # request key
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "S")
+        endpoint = endpoint_policy(r, "S", "on")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
