@@ -117,11 +117,11 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
         scaling_ins_sum += int(r.get(ins+reqtype+"_scaler")) # if autoscaling trigger total number of ins 
         scaling_ins = int(r.get(ins+reqtype+"_scaler")) # if autoscaling triggered, number of ins
         wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
-        if ins == "i1": # for fixing cortex memeory bug ,decresing i1 scores
+        if ins == "i1" and (reqtype == "R" or reqtype == "B" or reqtype == "Y" or reqtype == "S"): # for fixing cortex memeory bug ,decresing i1 scores
             wait_time[ins_index] = wait_time[ins_index] * wait_time[ins_index]
         if (auto == "on" and scaling_ins > 1): # autoscaling on and scaling instance is larger than 2, wait time is recalculated
             for i in range(scaling_ins-1):
-                wait_time[ins_index] = wait_time[ins_index] * (0.8)
+                wait_time[ins_index] = wait_time[ins_index] * (0.7)
 
     # evaluate score each instype
     for ins in instype:

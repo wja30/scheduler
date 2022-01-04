@@ -91,7 +91,11 @@ def lstm_predict(last_step, current_load, future_min, reqtype):
         buf2.append(int(value))
     for index, val in enumerate(buf2):
         print(f'future_min[after {index}mins] : {val}')
-    result_max = buf2[buf2.index(max(buf2[1:]))]
+    
+    if reqtype == "G": # for sensitive G
+        result_max = buf2[buf2.index(max(buf2[1:2]))]
+    else:
+        result_max = buf2[buf2.index(max(buf2[1:]))]
     print(f'result_max : {result_max}')
     result_min = buf2[buf2.index(min(buf2[1:]))]
     print(f'result_min : {result_min}')
@@ -100,8 +104,14 @@ def lstm_predict(last_step, current_load, future_min, reqtype):
     if (current_load > last_step): # if traffic is increasing, result_delta plusing
         if reqtype == "R":
             result = result_max + result_delta*10
-        elif reqtype == "B" or "G" or "Y" or "S":
-            result = result_max + result_delta*10
+        elif reqtype == "B":
+            result = result_max + result_delta*2
+        elif reqtype == "G":
+            result = result_max + result_delta*0
+        elif reqtype == "Y":
+            result = result_max + result_delta*3
+        elif reqtype == "S":
+            result = result_max + result_delta*3
     else:
         result = result_max
     print(f'lstm_result : {result}')
