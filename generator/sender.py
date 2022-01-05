@@ -24,7 +24,7 @@ number_reqs = 0
 url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/mia.wav"
 endpoint = "http://34.233.80.127/call/"
 reqtype = ["R", "B", "G", "Y", "S"]
-reqratio = [0, 0, 0, 100, 0] # req ratio (R : B : G : Y : S)
+reqratio = [0, 0, 0, 0, 100] # req ratio (R : B : G : Y : S)
 #endpoint_check = "http://34.233.80.127/check"
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
@@ -102,11 +102,12 @@ def send_data(timeout, reader):
         # tweet min : 1
         # tweet max : 91113
         # 1/3 정도 수준으로 감소 시키면 적정함 
+        #num = int(int(row['tweets']) * 1) #NORMAL
         #num = int(int(row['tweets']) * 0.2) #R
         #num = int(int(row['tweets']) * 0.198) #B
         #num = int(int(row['tweets']) * 0.011) #G
-        num = int(int(row['tweets']) * 0.418) #Y
-        #num = int(int(row['tweets']) * 0.435) #S
+        #num = int(int(row['tweets']) * 0.418) #Y
+        num = int(int(row['tweets']) * 0.435) #S
         num1 = int(row['tweets'])
         print(f'row[tweets] : {num1}')
         print(f'num : {num}')
@@ -129,7 +130,8 @@ def send_data(timeout, reader):
         except Exception as e:
             logging.info(e)
 
+#with open(f'./tweet_load_10-16_test.csv', 'r') as f:
 with open(f'./tweet_load_10:30-12:00.csv', 'r') as f:
     reader = csv.DictReader(f)
-    send_data(66,reader)
-
+    #send_data(2,reader) # for single test
+    send_data(66,reader) # for autoscaling test
