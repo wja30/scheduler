@@ -271,7 +271,7 @@ def R_post():
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "R", "on") # autoscaling on : "on", autoscaling off : "off"
+        endpoint = endpoint_policy(r, "R", "off") # autoscaling on : "on", autoscaling off : "off"
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
