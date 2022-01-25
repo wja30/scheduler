@@ -1,4 +1,4 @@
-for ((i=0;i<5;i++)); do
+for ((i=0;i<15;i++)); do
 	nohup python dispatcher/dispatcher.py &
 done
 nohup python on_meta/on_meta.py &

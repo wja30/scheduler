@@ -9,6 +9,7 @@ import redis
 import math
 import uuid
 from redis import Redis
+import random
 
 #########################################
 app = Flask(__name__)
@@ -100,6 +101,128 @@ def check_get():
             return "0"
 
 ################################################################
+
+'''
+# RR endpoint_policy
+def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
+
+    ins_index = random.randrange(0, 4)
+    
+    # make endpoint
+    endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
+    logging.info("endpoint :"+endpoint)
+    return endpoint
+'''
+
+
+# SMPL endpoint_policy
+def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
+    # endpoint_policy algorithm
+    score = [0.0 for j in range(4)]
+    inf_latency = [0.0 for j in range(4)]
+    wait_time = [0.0 for j in range(4)]
+    scaling_ins_sum = 0
+    score_slo = [0.0 for j in range(4)]
+
+    # extract inf_latency and wait_time
+    for ins in instype:
+        ins_index = instype.index(ins)
+        key = instype[ins_index] + reqtype
+        inf_latency[ins_index] = float(r.get(key+"_inf_latency"))
+        get_dict = json.loads(r.get(key+"_on"))
+        scaling_ins_sum += int(r.get(ins+reqtype+"_scaler")) # if autoscaling trigger total number of ins 
+        scaling_ins = int(r.get(ins+reqtype+"_scaler")) # if autoscaling triggered, number of ins
+        wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
+        if ins == "i1" and (reqtype == "R" or reqtype == "B" or reqtype == "Y" or reqtype == "S"): # for fixing cortex memeory bug ,decresing i1 scores
+            wait_time[ins_index] = wait_time[ins_index] * wait_time[ins_index]
+        if (auto == "on" and scaling_ins > 1): # autoscaling on and scaling instance is larger than 2, wait time is recalculated
+            for i in range(scaling_ins-1):
+                wait_time[ins_index] = wait_time[ins_index] * (0.7)
+    # evaluate score each instype
+    for ins in instype:
+        ins_index = instype.index(ins)
+        slo = float(r.get(reqtype+"_SLO_ms"))
+        score[ins_index] += slo - ((float(inf_latency[ins_index]) + float(wait_time[ins_index])))
+
+    for ins in instype:
+        ins_index = instype.index(ins)
+        logging.info("score :" + str(score[ins_index]))
+ 
+    # select max score
+    ins_index = score.index(max(score))
+
+    # for testing autoscaling
+    #ins_index = 0 # TOBE DELETED
+
+    # make endpoint
+    endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
+    logging.info("endpoint :"+endpoint)
+    return endpoint
+
+'''
+# MRLG endpoint_policy
+def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
+    # endpoint_policy algorithm
+    score = [0.0 for j in range(4)]
+    inf_latency = [0.0 for j in range(4)]
+    wait_time = [0.0 for j in range(4)]
+    scaling_ins_sum = 0
+    score_slo = [0.0 for j in range(4)]
+    avg_latency = [0.0 for j in range(4)]
+
+
+    
+    # extract inf_latency and wait_time
+    for ins in instype:
+        ins_index = instype.index(ins)
+        key = instype[ins_index] + reqtype
+        inf_latency[ins_index] = float(r.get(key+"_inf_latency"))
+        get_dict = json.loads(r.get(key+"_on"))
+        scaling_ins_sum += int(r.get(ins+reqtype+"_scaler")) # if autoscaling trigger total number of ins 
+        scaling_ins = int(r.get(ins+reqtype+"_scaler")) # if autoscaling triggered, number of ins
+        wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
+        avg_latency[ins_index] = float(get_dict["avglatency"])*1000.0
+        if ins == "i1" and (reqtype == "R" or reqtype == "B" or reqtype == "Y" or reqtype == "S"): # for fixing cortex memeory bug ,decresing i1 scores
+            wait_time[ins_index] = wait_time[ins_index] * wait_time[ins_index]
+            avg_latency[ins_index] = avg_latency[ins_index] * avg_latency[ins_index]
+        if (auto == "on" and scaling_ins > 1): # autoscaling on and scaling instance is larger than 2, wait time is recalculated
+            for i in range(scaling_ins-1):
+                wait_time[ins_index] = wait_time[ins_index] * (0.7)
+                avg_latency[ins_index] = avg_latency[ins_index] * (0.7)
+    # evaluate score each instype
+    for ins in instype:
+        ins_index = instype.index(ins)
+        slo = float(r.get(reqtype+"_SLO_ms"))
+        if (avg_latency[ins_index] > 0.0): # if real-time avglatency is higher than 0.0
+            exp_l = avg_latency[ins_index]
+        else: 
+            exp_l = (float(inf_latency[ins_index]) + float(wait_time[ins_index]))
+        if slo >= exp_l:
+            score[ins_index] += (slo - exp_l)
+        else:
+            score[ins_index] += (slo - exp_l)
+ 
+
+    for ins in instype:
+        ins_index = instype.index(ins)
+        logging.info("score :" + str(score[ins_index]))
+ 
+    # select max score
+    ins_index = score.index(max(score))
+
+    # for testing autoscaling
+    #ins_index = 0 # TOBE DELETED
+
+    # make endpoint
+    endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
+    logging.info("endpoint :"+endpoint)
+    return endpoint
+
+'''
+
+
+
+'''
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
@@ -142,6 +265,7 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
+'''
 '''
 # SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"):
