@@ -21,3 +21,6 @@ if [[ "" !=  "$PID" ]]; then
   echo "killing $PID"
   kill -9 $PID
 fi
+
+rm logs/*
+rm nohup.out 

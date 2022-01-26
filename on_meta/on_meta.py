@@ -75,7 +75,7 @@ def on_meta(r, queue):
 
     loopout_cnt = 0
 
-    for key in r.scan_iter("*-*", count=100):
+    for key in r.scan_iter("*-*", count=10000):
         #loopout_cnt += 1
         #if loopout_cnt > 100: #for on_meta sync performance
         #    break

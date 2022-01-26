@@ -114,7 +114,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     return endpoint
 '''
 
-
 # SMPL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
@@ -218,10 +217,10 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     logging.info("endpoint :"+endpoint)
     return endpoint
 
+
+
+
 '''
-
-
-
 '''
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
@@ -431,7 +430,7 @@ def B_post():
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "B", "on")
+        endpoint = endpoint_policy(r, "B", "off")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
@@ -465,7 +464,7 @@ def G_post():
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "G", "on")
+        endpoint = endpoint_policy(r, "G", "off")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
@@ -500,7 +499,7 @@ def Y_post():
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "Y", "on")
+        endpoint = endpoint_policy(r, "Y", "off")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
@@ -534,7 +533,7 @@ def S_post():
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "S", "on")
+        endpoint = endpoint_policy(r, "S", "off")
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
