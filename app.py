@@ -101,7 +101,6 @@ def check_get():
             return "0"
 
 ################################################################
-
 '''
 # RR endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
@@ -113,7 +112,53 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     logging.info("endpoint :"+endpoint)
     return endpoint
 '''
+'''
+# BGS(Best Greedy Selection) endpoint_policy
+def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
 
+    ins_index = 2 # 0:i1, 1:p2, 2:p3, 3:c5 
+    
+    # make endpoint
+    endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
+    logging.info("endpoint :"+endpoint)
+    return endpoint
+
+'''
+'''
+# Weight endpoint_policy
+def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
+    
+    if reqtype == "R":
+        reqratio = [5, 26, 60, 9] #R
+    elif reqtype == "B":
+        reqratio = [16, 24, 43, 17] #B
+    elif reqtype == "G":
+        reqratio = [8, 31, 53, 8] #G
+    elif reqtype == "S":
+        reqratio = [1, 18, 78, 3] #S
+    elif reqtype == "Y":
+        reqratio = [22, 20, 34, 24] #Y
+
+    x = random.randrange(0, 100)
+    logging.info("beforex : " + str(x))
+    if(x >=0 and x < reqratio[0]):
+        x = 0
+    if(x >= reqratio[0] and x < reqratio[0] + reqratio[1]):
+        x = 1
+    if(x >= reqratio[0] + reqratio[1] and x < reqratio[0] + reqratio[1] + reqratio[2]):
+        x = 2
+    if(x >= reqratio[0] + reqratio[1] + reqratio[2] and x < reqratio[0] + reqratio[1] + reqratio[2]+ reqratio[3]):
+        x = 3
+
+    ins_index = x
+    # make endpoint
+    endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
+    logging.info("endpoint :"+endpoint)
+    return endpoint
+'''
+
+
+'''
 # SMPL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
@@ -157,7 +202,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-
 '''
 # MRLG endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
@@ -219,8 +263,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
 
 
 
-
-'''
 '''
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
