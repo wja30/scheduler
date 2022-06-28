@@ -1,5 +1,5 @@
 # scheduler
-
+test2022.06.28
 # operation check
 ps -ef | grep -e dispatcher -e on_meta -e gunicorn -e scaler
 
@@ -9,6 +9,7 @@ ps -ef | grep -e dispatcher -e on_meta -e gunicorn -e scaler
 # deleting all process
 ./exedel.sh
 
+gunicorn -b 0.0.0.0:8000 app:app -w 30 --threads 30
 gunicorn -b 0.0.0.0:8000 app:app -w 100 --threads 100
 $ sudo systemctl restart nginx
 $ sudo systemctl restart helloworld
