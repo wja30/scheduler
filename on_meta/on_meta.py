@@ -85,7 +85,12 @@ def on_meta(r, queue):
             break
         get_dict = json.loads(get_json)
 
-        ins_index = instype.index(get_dict["endpoint"][-2:])
+        #ins_index = instype.index(get_dict["endpoint"][-2:])
+        if get_dict["reqtype"] == "R": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+            ins_index = instype.index(get_dict["endpoint"][-29:-27])
+        else: # for     "i1Rtail" : "image-classifier-resnet50-v2-i1" case
+            ins_index = instype.index(get_dict["endpoint"][-2:])
+ 
         req_index = reqtype.index(get_dict["reqtype"])
         
         # inflight calculation
