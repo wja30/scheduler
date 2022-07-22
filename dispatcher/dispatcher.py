@@ -19,7 +19,7 @@ from urllib2 import urlopen
 #from urllib import request
 #from urllib.request import Request, urlopen
 
-logging.basicConfig(filename='logs/dispatch.log', level=logging.INFO,format='%(asctime)s: %(message)s')
+logging.basicConfig(filename='logs/dispatch.log', level=logging.ERROR,format='%(asctime)s: %(message)s')
 
 url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/mia.wav"
 headers = {"content-type": "application/json"}
@@ -121,7 +121,7 @@ def dispatch(r, queue):
 
     try :
         req_json = json.dumps(req_json)
-        logging.info("after dispatch : " + req_json)
+        #logging.info("after dispatch : " + req_json)
         req_uuid = item
         r.set(req_uuid, req_json) # after 60 seconds expire
         #r.expire(req_uuid, 10)
