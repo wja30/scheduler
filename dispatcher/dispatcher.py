@@ -19,7 +19,7 @@ from urllib2 import urlopen
 #from urllib import request
 #from urllib.request import Request, urlopen
 
-logging.basicConfig(filename='logs/dispatch.log', level=logging.ERROR,format='%(asctime)s: %(message)s')
+logging.basicConfig(filename='logs/dispatch.log', level=logging.WARNING,format='%(asctime)s: %(message)s')
 
 url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/mia.wav"
 headers = {"content-type": "application/json"}
@@ -87,20 +87,30 @@ def dispatch(r, queue):
     logging.info(endpoint + " latency: " + str(round(elapsed, 4)) + "seconds")
    
     r.append(reqtype+"_all_reqs", ","+str(round(elapsed, 3))) #for all latency dumps -> 90,95,99 percentile
-   
-    logging.info("resp : " + str(resp))
-    
-    if reqtype == "R":
-        resp = json.dumps(resp.json())
-    elif reqtype == "B":
-        resp = resp.text
-    elif reqtype == "G":
-        resp = resp.text
-    elif reqtype == "Y":
-        resp = resp.text
-        data = ""
-    elif reqtype == "S":
-        resp = resp.text
+     
+    logging.warning("resp : " + str(resp))
+
+    if str(resp) == "<Response [503]>": # 5xx error latency = 60 sec set (time out)
+ #       logging.warning("wja30 503")
+        elapsed = 60
+    try : 
+
+        if reqtype == "R":
+            if str(resp) == "<Response [200]>":
+                resp = json.dumps(resp.json())
+            else:
+                resp = "503"
+        elif reqtype == "B":
+            resp = resp.text
+        elif reqtype == "G":
+            resp = resp.text
+        elif reqtype == "Y":
+            resp = resp.text
+            data = ""
+        elif reqtype == "S":
+            resp = resp.text
+    except Exception as e:
+        logging.warning(e)
 
     # todo "G","Y","S"
     
@@ -117,17 +127,17 @@ def dispatch(r, queue):
                 "metric_check" : metric_check, # 0 : before metric check, 1 : after check
                 }
     except Exception as e:
-        logging.info(e)
+        logging.warning(e)
 
     try :
         req_json = json.dumps(req_json)
-        #logging.info("after dispatch : " + req_json)
+        logging.info("after dispatch : " + req_json)
         req_uuid = item
         r.set(req_uuid, req_json) # after 60 seconds expire
         #r.expire(req_uuid, 10)
         #logging.info("ttl : " + str(r.ttl(req_uuid)))
     except Exception as e:
-        logging.info(e)
+        logging.warning(e)
 
 def dispatch_main():
     pool = ThreadPoolExecutor(100000)

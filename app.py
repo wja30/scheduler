@@ -115,17 +115,16 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
 # BGS(Best Greedy Selection) endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
 
-    ins_index = 2 # 0:i1, 1:p2, 2:p3, 3:c5 
+    ins_index = 0 # 0:i1, 1:p2, 2:p3, 3:c5 
     
     # make endpoint
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-
 '''
 # Weight endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
-    
+
     if reqtype == "R":
         reqratio = [5, 26, 60, 9] #R
     elif reqtype == "B":
@@ -198,7 +197,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-
 '''
 '''
 # MRLG endpoint_policy
@@ -445,7 +443,8 @@ def R_post():
                 "metric_check" : 0, # 0 : before metric (e.g. reqs) check, 1 : after metric check
                 }
         req_json = json.dumps(req_json)
-        r.set(req_uuid, req_json, 60) #// expire after 60 seconds (if expire 60s -> inflight count is correct, if no expire 60s=no expires -> inflight count is not correct, but time out reqs count value is remained in infklight value)
+        r.set(req_uuid, req_json, 60) #if 60 : 503 reqs can not detected, so prolong the value from 60 to 120
+        #// expire after 60 seconds (if expire 60s -> inflight count is correct, if no expire 60s=no expires -> inflight count is not correct, but time out reqs count value is remained in infklight value)
         # insert request priority queue
         #logging.info('* push:')
         res = queue.push(req_uuid)
