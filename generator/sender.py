@@ -25,7 +25,7 @@ number_reqs = 0
 url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/mia.wav"
 endpoint = "http://34.233.80.127/call/"
 reqtype = ["R", "B", "G", "Y", "S"]
-reqratio = [0, 0, 100, 0, 0] # req ratio (R : B : G : Y : S)
+reqratio = [100, 0, 0, 0, 0] # req ratio (R : B : G : Y : S)
 #endpoint_check = "http://34.233.80.127/check"
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
@@ -59,17 +59,9 @@ def sender(data):
     logging.info("afterx : " + str(x))
     newendpoint =  endpoint + str(reqtype[x]) # when R(image-resnet50 calls)
     logging.info("newendpoint :" + newendpoint)
-  
-    try:
-        # download the image
-        dl_request = requests.get(IMAGE_URL, stream=True)
-        dl_request.raise_for_status()
-        # compose a JSON Predict request (send JPEG image in base64).
-        jpeg_bytes = base64.b64encode(dl_request.content).decode("utf-8")
-        predict_request = '{"instances" : [{"b64": "%s"}]}' % jpeg_bytes
-        payloadR = predict_request
-    except Exception as e:
-        logging.info(e)
+
+    # for R input image binary
+    payloadR = data
 
 
     if str(reqtype[x]) == "R":
@@ -102,7 +94,18 @@ def sender(data):
 
 def send_data(timeout, reader):
     pool = ThreadPoolExecutor(5000)
-    data = ""
+    #data = ""
+    try:
+        # download the image
+        dl_request = requests.get(IMAGE_URL, stream=True)
+        dl_request.raise_for_status()
+        # compose a JSON Predict request (send JPEG image in base64).
+        jpeg_bytes = base64.b64encode(dl_request.content).decode("utf-8")
+        predict_request = '{"instances" : [{"b64": "%s"}]}' % jpeg_bytes
+        data = predict_request
+    except Exception as e:
+        logging.info(e)
+
     global number_reqs
     
     
@@ -118,11 +121,13 @@ def send_data(timeout, reader):
         # tweet max : 91113
         # 1/3 정도 수준으로 감소 시키면 적정함 
         num = int(int(row['tweets']) * 1) #NORMAL
-        #num = int(int(row['tweets']) * 2.6) #R (max:1.463)
-        #num = int(int(row['tweets']) * 0.258) #B (max:1.463)
-        #num = int(int(row['tweets']) * 0.014) #G (max:1.463)
-        #num = int(int(row['tweets']) * 0.566) #Y (max:1.463)
-        #num = int(int(row['tweets']) * 0.545) #S (max:1.463)
+        #num = int(int(row['tweets']) * 2.6) #R-v1 (max:1.463)
+        #num = int(int(row['tweets']) * 3.606) #R-v2 (max:1.463)
+        #num = int(int(row['tweets']) * 0.258) #B-v1 (max:1.463)
+        #num = int(int(row['tweets']) * 0.014) #G-v1 (max:1.463)
+        #num = int(int(row['tweets']) * 0.118) #G-v2 (max:1.463)
+        #num = int(int(row['tweets']) * 0.566) #Y-v1 (max:1.463)
+        #num = int(int(row['tweets']) * 0.545) #S-v1 (max:1.463)
         num1 = int(row['tweets'])
         print(f'row[tweets] : {num1}')
         print(f'num : {num}')
@@ -141,7 +146,7 @@ def send_data(timeout, reader):
                 logging.info("bofore pool")
                 pool.submit(sender, data)
                 logging.info("after pool")
-                time.sleep(s/1000.0)
+                time.sleep(s/10000.0)
         except Exception as e:
             logging.info(e)
 
