@@ -112,15 +112,17 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     logging.info("endpoint :"+endpoint)
     return endpoint
 '''
+'''
 # BGS(Best Greedy Selection) endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
 
-    ins_index = 0 # 0:i1, 1:p2, 2:p3, 3:c5 
+    ins_index = 2 # 0:i1, 1:p2, 2:p3, 3:c5 
     
     # make endpoint
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
+'''
 '''
 # Weight endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
@@ -152,7 +154,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-'''
 '''
 # SMPL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
@@ -197,7 +198,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-'''
 '''
 # MRLG endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated

@@ -85,14 +85,13 @@ def dispatch(r, queue):
     end = time.time()
     elapsed = end - start
     logging.info(endpoint + " latency: " + str(round(elapsed, 4)) + "seconds")
-   
+    if str(resp) == "<Response [503]>": # 5xx error latency = 60 sec set (time out)
+        elapsed = 60
+  
     r.append(reqtype+"_all_reqs", ","+str(round(elapsed, 3))) #for all latency dumps -> 90,95,99 percentile
      
     logging.warning("resp : " + str(resp))
 
-    if str(resp) == "<Response [503]>": # 5xx error latency = 60 sec set (time out)
- #       logging.warning("wja30 503")
-        elapsed = 60
     try : 
 
         if reqtype == "R":
