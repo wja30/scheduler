@@ -132,12 +132,12 @@ def send_data(timeout, reader):
         print(f'row[tweets] : {num1}')
         print(f'num : {num}')
         lam = (60 * 1000.0) / num
-        samples = np.random.poisson(lam, num)
+        #samples = np.random.poisson(lam, num)
+        samples = np.load('possion_sample.npy')
         print(f'line: {reader.line_num}; sample_number: {num}')
         print(f'lam : {lam}')
         print(f'samples : {samples}')
         print(f'bug : {len(samples)}')
-        np.save('possion_sample', samples)
         logging.info("test")
         try:
             for s in samples:
