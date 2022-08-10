@@ -4,6 +4,7 @@ import boto3
 import json
 import requests
 import time
+import datetime
 from rpq.RpqQueue import RpqQueue
 import redis
 import math
@@ -26,9 +27,10 @@ if not app.debug:
     # 어느 단계까지 로깅을 할지를 적어줌
     # app.logger.addHandler() 에 등록시켜줘야 app.logger 로 사용 가능
     app.logger.addHandler(file_handler)
-    logging.basicConfig(filename='logs/info.log', level=logging.INFO,format='%(asctime)s: %(message)s')
+    #logging.basicConfig(filename='logs/info.log', level=logging.WARNING,format='%(asctime)s: %(message)s')
+    logging.basicConfig(filename='logs/info.log', level=logging.WARNING,format='%(message)s')
 
-#data = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
+data = json.dumps({'url': 'https://i.imgur.com/213xcvs.jpg'})
 headers = {"content-type": "application/json"}# for R, B, G, S
 headers_binary = {"content-type": "application/octet-stream"}# for Y
 timeout = 60
@@ -155,6 +157,7 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     logging.info("endpoint :"+endpoint)
     return endpoint
 '''
+'''
 # SMPL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
@@ -179,10 +182,16 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
             for i in range(scaling_ins-1):
                 wait_time[ins_index] = wait_time[ins_index] * (0.7)
     # evaluate score each instype
+    now = time.localtime()
     for ins in instype:
         ins_index = instype.index(ins)
         slo = float(r.get(reqtype+"_SLO_ms"))
         score[ins_index] += slo - ((float(inf_latency[ins_index]) + float(wait_time[ins_index])))
+   
+        #now = time.localtime()
+        #print(time.strftime('%X', now))
+        # for detail log analysis
+        logging.warning(str(time.strftime('%X', now)) + " " + str(ins) + " " + str(slo) + " " + str(wait_time[ins_index]))
 
     for ins in instype:
         ins_index = instype.index(ins)
@@ -198,6 +207,7 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
+
 '''
 # MRLG endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
@@ -229,6 +239,7 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
                 wait_time[ins_index] = wait_time[ins_index] * (0.7)
                 avg_latency[ins_index] = avg_latency[ins_index] * (0.7)
     # evaluate score each instype
+    now = time.localtime()
     for ins in instype:
         ins_index = instype.index(ins)
         slo = float(r.get(reqtype+"_SLO_ms"))
@@ -240,6 +251,8 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
             score[ins_index] += (slo - exp_l)
         else:
             score[ins_index] += (slo - exp_l)
+
+        logging.warning(str(time.strftime('%X', now)) + " " + str(ins) + " " + str(slo) + " " + str(avg_latency[ins_index]))
  
 
     for ins in instype:
@@ -256,7 +269,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-'''
 '''
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated

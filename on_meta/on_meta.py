@@ -14,8 +14,9 @@ import uuid
 import math
 import redis
 from rpq.RpqQueue import RpqQueue
+import threading
 
-logging.basicConfig(filename='logs/on_meta.log', level=logging.INFO,format='%(asctime)s: %(message)s')
+logging.basicConfig(filename='logs/on_meta.log', level=logging.WARNING, format='%(asctime)s: %(message)s')
 
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
@@ -24,11 +25,12 @@ windown = 60 # 60 sec
 instype = ["i1", "p2", "p3", "c5"]
 reqtype = ["R", "B", "G", "Y", "S"]
 total_reqs = 0
+lock = threading.Lock()
 
 def redis_connection():
     r = redis.StrictRedis(host='23.23.220.207', port=6379, decode_responses=True, password='redisscheduler')
     if r.ping():
-        logging.info("Connected to Redis")
+        logging.warning("Connected to Redis")
     # Redis instance
     rq = redis.StrictRedis(host='23.23.220.207', port=6379, db=0, password='redisscheduler')
     # RpqQueue
@@ -74,6 +76,10 @@ def on_meta(r, queue):
     base_time = time.time()
 
     loopout_cnt = 0
+    #try:
+    #    lock.acquire()
+    #except Exception as e:
+    #    logging.warning(e)
 
     for key in r.scan_iter("*-*", count=10000):
         #loopout_cnt += 1
@@ -154,7 +160,12 @@ def on_meta(r, queue):
                 on_meta_summation(r, ins, req, cnt[ins_index][req_index], latency[ins_index][req_index], slo_violate_cnt[ins_index][req_index])
             elif cnt[ins_index][req_index] == 0:
                 set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index], req_sec[ins_index][req_index]) 
- 
+
+    #try : 
+    #    lock.release()
+    #except Exception as e:
+    #    logging.warning(e)
+
 # (60sec window) summation : total avglatency, total slo violation rate
 def on_meta_summation(r, ins, req, reqs, latencies, slo_violate_cnt):
     
