@@ -58,6 +58,7 @@ def dispatch(r, queue):
         data = get_dict["reqdata"]
         reqtype = get_dict["reqtype"]
         reqtime = get_dict["time"]
+        smpl_latency = get_dict["smpl_latency"]
         logging.info("dispatch endpoint : " + endpoint)
         logging.info("dispatch data : " + data)
     except Exception as e:
@@ -122,6 +123,7 @@ def dispatch(r, queue):
                 "reqdata" : data,
                 "respdata" : resp, # 0 : before dispatch, value : response data
                 "latency" : elapsed, # 0 : before dispatch, value : latency
+                "smpl_latency" : smpl_latency,
                 "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
                 "metric_check" : metric_check, # 0 : before metric check, 1 : after check
                 }

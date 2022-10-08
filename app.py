@@ -11,6 +11,9 @@ import math
 import uuid
 from redis import Redis
 import random
+import os
+import datetime as dt
+from datetime import timedelta as td
 
 #########################################
 app = Flask(__name__)
@@ -36,11 +39,29 @@ headers_binary = {"content-type": "application/octet-stream"}# for Y
 timeout = 60
 instype = ["i1", "p2", "p3", "c5"]
 reqtype = ["R", "B", "G", "Y", "S"]
+inscount = [0, 0, 0, 0]
+isStart = 0
+start = dt.datetime.now()
+gappluscount = [0, 0, 0, 0] # i1, p2, p3, c5
+gapminuscount = [0, 0, 0, 0]
+isAuto = 0
+autoStart = 0
+
 ##########################################
 
 
 
 def redis_connection():
+
+    #redis pool patch code
+    redis_pool = redis.ConnectionPool(host='23.23.220.207', port=6379, db=0, max_connections=100 , decode_responses=True, password='redisscheduler')# pool로 connection을 취득
+    r =  Redis(connection_pool=redis_pool)
+    if r.ping():
+        logging.info("Connected to Redis")
+    rq = redis.StrictRedis(connection_pool=redis_pool)
+    queue = RpqQueue(rq, 'simple_queue')
+    return r, queue
+    ''' 
     r = Redis(host='23.23.220.207', port=6379, decode_responses=True, password='redisscheduler')
     if r.ping():
         logging.info("Connected to Redis")
@@ -49,7 +70,7 @@ def redis_connection():
     # RpqQueue
     queue = RpqQueue(rq, 'simple_queue')
     return r, queue
-
+    '''
 ##########################################
 
 @app.route('/')
@@ -118,7 +139,7 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
 # BGS(Best Greedy Selection) endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
 
-    ins_index = 2 # 0:i1, 1:p2, 2:p3, 3:c5 
+    ins_index = 0 # 0:i1, 1:p2, 2:p3, 3:c5 
     
     # make endpoint
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
@@ -167,6 +188,18 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     scaling_ins_sum = 0
     score_slo = [0.0 for j in range(4)]
 
+    global isStart
+    global start
+    
+    global isAuto
+    global autoStart
+
+
+    if isStart == 0:
+        start = dt.datetime.now()
+        isStart = 1
+ 
+
     # extract inf_latency and wait_time
     for ins in instype:
         ins_index = instype.index(ins)
@@ -179,10 +212,21 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
         if ins == "i1" and (reqtype == "R" or reqtype == "B" or reqtype == "Y" or reqtype == "S"): # for fixing cortex memeory bug ,decresing i1 scores
             wait_time[ins_index] = wait_time[ins_index] * wait_time[ins_index]
         if (auto == "on" and scaling_ins > 1): # autoscaling on and scaling instance is larger than 2, wait time is recalculated
-            for i in range(scaling_ins-1):
-                wait_time[ins_index] = wait_time[ins_index] * (0.7)
+            # wait 5 minutes for autoscaling is stabled
+            if isAuto == 0:
+                autoStart = time.time()
+                isAuto = 1
+            nowAuto = time.time()
+            if (nowAuto > autoStart + 300): # digit means 0 ; 0 seconds, 300 means 5 mins
+                # if 5 minutes is passed
+                for i in range(scaling_ins-1):
+                    wait_time[ins_index] = wait_time[ins_index] * (0.3)
+                    #wait_time[ins_index] = wait_time[ins_index] * (0.7)
+    
     # evaluate score each instype
-    now = time.localtime()
+    #now = time.localtime()
+    #now = datetime.now()
+    now = dt.datetime.now()
     for ins in instype:
         ins_index = instype.index(ins)
         slo = float(r.get(reqtype+"_SLO_ms"))
@@ -191,7 +235,9 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
         #now = time.localtime()
         #print(time.strftime('%X', now))
         # for detail log analysis
-        logging.warning(str(time.strftime('%X', now)) + " " + str(ins) + " " + str(slo) + " " + str(wait_time[ins_index]))
+        logging.warning(str(os.getpid()) + " " +str(now-start) + " " + str(ins) + " " + str(slo) + " " + str(wait_time[ins_index])
+                + " inscount i1 " + str(inscount[0]) + " p2 " + str(inscount[1]) + " p3 " + str(inscount[2]) + " c5 " + str(inscount[3])
+                + " sum " + str(inscount[0]+inscount[1]+inscount[2]+inscount[3]))
 
     for ins in instype:
         ins_index = instype.index(ins)
@@ -199,15 +245,15 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
  
     # select max score
     ins_index = score.index(max(score))
-
+    inscount[ins_index] = inscount[ins_index] + 1
+    
     # for testing autoscaling
     #ins_index = 0 # TOBE DELETED
 
     # make endpoint
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
-    return endpoint
-
+    return endpoint, 0.5
 '''
 # MRLG endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
@@ -218,8 +264,16 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     scaling_ins_sum = 0
     score_slo = [0.0 for j in range(4)]
     avg_latency = [0.0 for j in range(4)]
+    
+    global isStart
+    global start
 
+    global isAuto
+    global autoStart
 
+    if isStart == 0:
+        start = dt.datetime.now()
+        isStart = 1
     
     # extract inf_latency and wait_time
     for ins in instype:
@@ -235,11 +289,22 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
             wait_time[ins_index] = wait_time[ins_index] * wait_time[ins_index]
             avg_latency[ins_index] = avg_latency[ins_index] * avg_latency[ins_index]
         if (auto == "on" and scaling_ins > 1): # autoscaling on and scaling instance is larger than 2, wait time is recalculated
-            for i in range(scaling_ins-1):
-                wait_time[ins_index] = wait_time[ins_index] * (0.7)
-                avg_latency[ins_index] = avg_latency[ins_index] * (0.7)
+            # wait 5 minutes for autoscaling is stabled
+            if isAuto == 0:
+                autoStart = time.time()
+                isAuto = 1
+            nowAuto = time.time()
+            if (nowAuto > autoStart + 300): # digit means 0 ; 0 seconds, 300 means 5 mins
+                # if 5 minutes is passed
+                for i in range(scaling_ins-1):
+                    wait_time[ins_index] = wait_time[ins_index] * (0.3)
+                    avg_latency[ins_index] = avg_latency[ins_index] * (0.3) 
+                    #wait_time[ins_index] = wait_time[ins_index] * (0.7)
+                    #avg_latency[ins_index] = avg_latency[ins_index] * (0.7) 
+
     # evaluate score each instype
-    now = time.localtime()
+    #now = time.localtime()
+    now = dt.datetime.now()
     for ins in instype:
         ins_index = instype.index(ins)
         slo = float(r.get(reqtype+"_SLO_ms"))
@@ -251,8 +316,22 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
             score[ins_index] += (slo - exp_l)
         else:
             score[ins_index] += (slo - exp_l)
+    
+        smpl_exp_l = (float(inf_latency[ins_index]) + float(wait_time[ins_index]))
+        
+        if ((smpl_exp_l - exp_l) > 0):
+            gappluscount[ins_index] = gappluscount[ins_index] + 1
+        
+        if ((smpl_exp_l - exp_l) < 0):
+            gapminuscount[ins_index] = gapminuscount[ins_index] + 1
 
-        logging.warning(str(time.strftime('%X', now)) + " " + str(ins) + " " + str(slo) + " " + str(avg_latency[ins_index]))
+        #logging.warning(str(time.strftime('%X', now)) + " " + str(ins) + " " + str(slo) + " " + str(avg_latency[ins_index]))
+        logging.warning(str(os.getpid()) + " " + str(now-start) + " " + str(ins) + " " + str(slo) + " " + str(round(avg_latency[ins_index],2))
+                + " inscount i1 " + str(inscount[0]) + " p2 " + str(inscount[1]) + " p3 " + str(inscount[2]) + " c5 " + str(inscount[3])
+                + " sum " + str(inscount[0]+inscount[1]+inscount[2]+inscount[3]) + " MRLG " + str(exp_l) + " SMPL " + str(smpl_exp_l) + " SMPL-MRLG " + str(smpl_exp_l - exp_l) + " (SMPL-MRLG)/SMPL*100 " + str((smpl_exp_l - exp_l)/smpl_exp_l*100) + " pluscount/minuscount i1 " + str(gappluscount[0]) + 
+            "/" + str(gapminuscount[0]) + " p2 " + str(gappluscount[1]) + "/" + str(gapminuscount[1]) + " p3 " + str(gappluscount[2]) + "/" + str(gapminuscount[2]) + " c5 " + str(gappluscount[3]) + "/" + str(gapminuscount[3]))
+
+
  
 
     for ins in instype:
@@ -261,6 +340,8 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
  
     # select max score
     ins_index = score.index(max(score))
+    inscount[ins_index] = inscount[ins_index] + 1
+ 
 
     # for testing autoscaling
     #ins_index = 0 # TOBE DELETED
@@ -268,7 +349,8 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     # make endpoint
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
-    return endpoint
+    smpl_exp_l = (float(inf_latency[ins_index]) + float(wait_time[ins_index])) 
+    return endpoint, smpl_exp_l 
 '''
 # MAEL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
@@ -442,7 +524,7 @@ def R_post():
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint = endpoint_policy(r, "R", "off") # autoscaling on : "on", autoscaling off : "off"
+        endpoint, smpl_exp_l = endpoint_policy(r, "R", "off") # autoscaling on : "on", autoscaling off : "off"
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch
@@ -451,6 +533,7 @@ def R_post():
                 "reqdata" : data,
                 "respdata" : 0, # 0 : before dispatch, value : response data
                 "latency" : 0, # 0 : before dispatch, value : latency
+                "smpl_latency" : smpl_exp_l, # smpl_latency : expected latency based on offline latency
                 "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
                 "metric_check" : 0, # 0 : before metric (e.g. reqs) check, 1 : after metric check
                 }

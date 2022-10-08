@@ -105,13 +105,13 @@ def lstm_predict(last_step, current_load, future_min, reqtype):
         if reqtype == "R":
             result = result_max + result_delta*10
         elif reqtype == "B":
-            result = result_max + result_delta*2
+            result = result_max + result_delta*4
         elif reqtype == "G":
             result = result_max + result_delta*0
         elif reqtype == "Y":
-            result = result_max + result_delta*3
+            result = result_max + result_delta*5
         elif reqtype == "S":
-            result = result_max + result_delta*3
+            result = result_max + result_delta*1
     else:
         result = result_max
     print(f'lstm_result : {result}')

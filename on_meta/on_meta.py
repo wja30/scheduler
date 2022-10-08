@@ -15,9 +15,16 @@ import math
 import redis
 from rpq.RpqQueue import RpqQueue
 import threading
+import os
+import datetime as dt
+from datetime import timedelta as td
 
-logging.basicConfig(filename='logs/on_meta.log', level=logging.WARNING, format='%(asctime)s: %(message)s')
 
+logging.basicConfig(filename='logs/on_meta.log', level=logging.WARNING, format='%(message)s')
+
+
+isStart = 0
+start = dt.datetime.now()
 headers = {"content-type": "application/json"}
 headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60
@@ -27,10 +34,13 @@ reqtype = ["R", "B", "G", "Y", "S"]
 total_reqs = 0
 lock = threading.Lock()
 
+gappluscount = [0, 0, 0, 0] # i1, p2, p3, c5
+gapminuscount = [0, 0, 0, 0]
+
 def redis_connection():
     r = redis.StrictRedis(host='23.23.220.207', port=6379, decode_responses=True, password='redisscheduler')
     if r.ping():
-        logging.warning("Connected to Redis")
+        logging.info("Connected to Redis")
     # Redis instance
     rq = redis.StrictRedis(host='23.23.220.207', port=6379, db=0, password='redisscheduler')
     # RpqQueue
@@ -74,6 +84,14 @@ def on_meta(r, queue):
     first_check = [[0]*5 for j in range(5)] 
 
     base_time = time.time()
+
+    
+    global isStart
+    global start
+
+    if isStart == 0:
+        start = dt.datetime.now()
+        isStart = 1
 
     loopout_cnt = 0
     #try:
@@ -122,6 +140,7 @@ def on_meta(r, queue):
             reqdata = get_dict["reqdata"]
             respdata = get_dict["respdata"]
             avglatency = get_dict["latency"]
+            smpl_latency = get_dict["smpl_latency"]
             endpoint = get_dict["endpoint"]
             metric_check = 1
 
@@ -134,18 +153,35 @@ def on_meta(r, queue):
                     "reqdata" : reqdata,
                     "respdata" : respdata, # 0 : before dispatch, value : response data
                     "latency" : avglatency, # 0 : before dispatch, value : latency
+                    "smpl_latency" : smpl_latency, 
                     "endpoint" : endpoint, # 0 : before dispatch, value : after endpoint decision
                     "metric_check" : metric_check, # 0 : before metric check, 1 : after check
                     }
             except Exception as e:
                 logging.info(e)
 
+            now = dt.datetime.now()
             try :
                 req_json = json.dumps(req_json)
                 #logging.info("after dispatch : " + req_json)
                 req_uuid = key
                 #r.set(req_uuid, req_json, 1) # after 60 seconds expire
-                r.delete(req_uuid)
+                # before erasing logging the smpl - mrlg latency!!
+
+                if reqreqtype == "R": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+                    ins = endpoint[-29:-27]
+                else: # for     "i1Rtail" : "image-classifier-resnet50-v2-i1" case
+                    ins = endpoint[-2:]
+
+                ins_index = instype.index(ins)
+                if ((smpl_latency/1000 - avglatency) > 0):
+                    gappluscount[ins_index] = gappluscount[ins_index] + 1
+                if ((smpl_latency/1000 - avglatency) < 0):
+                    gapminuscount[ins_index] = gapminuscount[ins_index] + 1
+
+                logging.warning(str(os.getpid()) + " " + str(now-start) + str(" ins ") + str(ins) + str(" avglatency ") + str(avglatency) + str(" smpl_latency ") + str(smpl_latency/1000) + str(" (smpl-mrlg)/smpl*100 ") + str((smpl_latency/1000 - avglatency)/smpl_latency*100) + " pluscount/minuscount i1 " + str(gappluscount[0]) + "/" + str(gapminuscount[0]) + " p2 " + str(gappluscount[1]) + "/" + str(gapminuscount[1]) + " p3 " + str(gappluscount[2]) + "/" + str(gapminuscount[2]) + " c5 " + str(gappluscount[3]) + "/" + str(gapminuscount[3]))
+
+                r.delete(req_uuid) # erase reqs if metric_check => 1
             except Exception as e:
                 logging.info(e)
 
