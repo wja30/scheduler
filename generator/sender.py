@@ -20,6 +20,8 @@ from rpq.RpqQueue import RpqQueue
 
 logging.basicConfig(filename='logs/sender.log', level=logging.INFO,format='%(asctime)s: %(message)s')
 
+
+
 global number_reqs
 number_reqs = 0
 url = "https://wja300-cortex.s3.amazonaws.com/sound-classifier/mia.wav"
@@ -120,9 +122,9 @@ def send_data(timeout, reader):
         # tweet min : 1
         # tweet max : 91113
         # 1/3 정도 수준으로 감소 시키면 적정함 
-        num = int(int(row['tweets']) * 1) #NORMAL
+        #num = int(int(row['tweets']) * 1) #NORMAL
         #num = int(int(row['tweets']) * 2.6) #R-v1 (max:1.463)
-        #num = int(int(row['tweets']) * 3.606) #R-v2 (max:1.463)
+        num = int(int(row['tweets']) * 3.149) #R-v2 (max:1.463)
         #num = int(int(row['tweets']) * 0.258) #B-v1 (max:1.463)
         #num = int(int(row['tweets']) * 0.014) #G-v1 (max:1.463)
         #num = int(int(row['tweets']) * 0.118) #G-v2 (max:1.463)
@@ -132,6 +134,7 @@ def send_data(timeout, reader):
         print(f'row[tweets] : {num1}')
         print(f'num : {num}')
         lam = (60 * 1000.0) / num
+        np.random.seed(seed=100) #no randoom
         samples = np.random.poisson(lam, num)
         print(f'line: {reader.line_num}; sample_number: {num}')
         print(f'lam : {lam}')
@@ -151,8 +154,9 @@ def send_data(timeout, reader):
         except Exception as e:
             logging.info(e)
 
-with open(f'./tweet_load_10-16_test.csv', 'r') as f:
-#with open(f'./tweet_load_10:30-12:00.csv', 'r') as f:
+#with open(f'./tweet_load_10-16_test.csv', 'r') as f:
+with open(f'./tweet_load_10:30-12:00.csv', 'r') as f:
     reader = csv.DictReader(f)
-    send_data(2,reader) # for single test
-    #send_data(66,reader) # for autoscaling test
+#    send_data(2,reader) # for single test
+#    send_data(66,reader) # for autoscaling test
+    send_data(30,reader) # for autoscaling test
