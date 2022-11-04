@@ -88,9 +88,23 @@ def dispatch(r, queue):
     logging.info(endpoint + " latency: " + str(round(elapsed, 4)) + "seconds")
     if str(resp) == "<Response [503]>": # 5xx error latency = 60 sec set (time out)
         elapsed = 60
-  
+ 
+    if reqtype == "R": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+        ins = endpoint[-29:-27]
+    if reqtype == "B": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+        ins = endpoint[-25:-23]
+    if reqtype == "G": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+        ins = endpoint[-2:]
+    if reqtype == "Y": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+        ins = endpoint[-27:-25]
+    if reqtype == "S": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+        ins = endpoint[-30:-28]
+
+    # sample :    "R_all_reqs" : 0,
     r.append(reqtype+"_all_reqs", ","+str(round(elapsed, 3))) #for all latency dumps -> 90,95,99 percentile
-     
+    # sample :    "c5R_all_reqs" : 0,
+    r.append(ins+reqtype+"_all_reqs", ","+str(round(elapsed, 3))) #for measuring c5R inference variation
+
     logging.warning("resp : " + str(resp))
 
     try : 

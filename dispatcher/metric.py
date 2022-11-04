@@ -28,6 +28,7 @@ headers_binary = {"content-type": "application/octet-stream"}
 timeout = 60
 header_data = ""
 reqtype = ["R", "B", "G", "Y", "S"]
+instype = ["i1", "p2", "p3", "c5"]
 nums = []
 
 def redis_connection():
@@ -42,6 +43,8 @@ def redis_connection():
 
 
 def metric(r, queue):
+    # sample :    "R_all_reqs" : 0,
+    #r.append(reqtype+"_all_reqs", ","+str(round(elapsed, 3))) #for all latency dumps -> 90,95,99 percentile                                
     try:
         for req in reqtype:
             get_json = str(r.get(req+"_all_reqs"))
@@ -65,7 +68,25 @@ def metric(r, queue):
             r.set(req+"_99p_latency",  str(p_gugu))
     except Exception as e:
         logging.info(e)
- 
+    # sample :    "c5R_all_reqs" : 0,
+    #r.append(ins+reqtype+"_all_reqs", ","+str(round(elapsed, 3))) #for measuring c5R inference variation
+    try:
+        for req in reqtype:
+            for ins in instype:
+                get_json = str(r.get(ins+req+"_all_reqs"))
+                nums = get_json.split(',')
+                nums_f = map(float, nums)
+                a = np.array(nums_f, dtype=np.float32)
+                p_var = np.var(a)
+                p_std = np.std(a)
+                # samplle : "i1R_var" : 0,
+                r.set(ins+req+"_var", str(p_var))
+
+                # metric.py every 30 seconods reset c5R_all_reqs values
+                r.set(ins+req+"_all_reqs", "0")
+    except Exception as e:
+        logging.info(e)
+
 '''
     get_dict = json.loads(get_json)
     try:

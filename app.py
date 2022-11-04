@@ -46,6 +46,11 @@ gappluscount = [0, 0, 0, 0] # i1, p2, p3, c5
 gapminuscount = [0, 0, 0, 0]
 isAuto = 0
 autoStart = 0
+dynamicStart = 0
+AutoW = 0.3 # autoscaling aware weight
+WindowMax = 0.01 # base max value : 0.01 no action window max (prevent oscilliation)
+WindowMin = 0.001 # base min value : 0.0001 no action window min (prevent oscillation)
+
 
 ##########################################
 
@@ -139,12 +144,12 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
 # BGS(Best Greedy Selection) endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
 
-    ins_index = 0 # 0:i1, 1:p2, 2:p3, 3:c5 
+    ins_index = 3 # 0:i1, 1:p2, 2:p3, 3:c5 
     
     # make endpoint
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
-    return endpoint
+    return endpoint, 0.5 # 0.5 is dummy value
 '''
 '''
 # Weight endpoint_policy
@@ -178,7 +183,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     logging.info("endpoint :"+endpoint)
     return endpoint
 '''
-'''
 # SMPL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
@@ -195,6 +199,15 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     global autoStart
 
 
+    global dynamicStart # use for dynamic autoscaling (every 30 seconds)
+    global AutoW #default valule : 0.3
+    global WindowMax # base max value : 0.01 no action window max (prevent oscilliation)
+    global WindowMin # base min value : 0.0001 no action window min (prevent oscillation)
+    WindowMax = 0.01
+    WindowMin = 0.001
+
+
+
     if isStart == 0:
         start = dt.datetime.now()
         isStart = 1
@@ -208,6 +221,10 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
         get_dict = json.loads(r.get(key+"_on"))
         scaling_ins_sum += int(r.get(ins+reqtype+"_scaler")) # if autoscaling trigger total number of ins 
         scaling_ins = int(r.get(ins+reqtype+"_scaler")) # if autoscaling triggered, number of ins
+        ##### scaling_ins enforce test
+        #if ins == "c5":
+        #    scaling_ins = 20
+        ##### scaling_ins enforce test
         wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
         if ins == "i1" and (reqtype == "R" or reqtype == "B" or reqtype == "Y" or reqtype == "S"): # for fixing cortex memeory bug ,decresing i1 scores
             wait_time[ins_index] = wait_time[ins_index] * wait_time[ins_index]
@@ -220,8 +237,23 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
             if (nowAuto > autoStart + 300): # digit means 0 ; 0 seconds, 300 means 5 mins
                 # if 5 minutes is passed
                 for i in range(scaling_ins-1):
-                    wait_time[ins_index] = wait_time[ins_index] * (0.3)
+                    
+                    # every 30 seconds logic is executed
+                    if(time.time() > dynamicStart + 30):
+                        #check inf variation
+                        var = float(r.get(key+"_var"))
+                        if(var < WindowMin):
+                            AutoW = AutoW * 0.95 # reduce weight by -5%
+                        elif(var >= WindowMin and var < WindowMax):
+                            AutoW = AutoW
+                        elif(var >= WindowMax):
+                            AutoW = AutoW * 1.05 # improve weight by +5%
+                        dynamicStart = time.time()
+                        logging.warning("AutoW : " + str(AutoW) + " " + key + "_var : " + str(var))
+
+                    wait_time[ins_index] = wait_time[ins_index] * AutoW
                     #wait_time[ins_index] = wait_time[ins_index] * (0.7)
+
     
     # evaluate score each instype
     #now = time.localtime()
@@ -254,7 +286,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint, 0.5
-'''
 # MRLG endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
@@ -265,11 +296,18 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     score_slo = [0.0 for j in range(4)]
     avg_latency = [0.0 for j in range(4)]
     
-    global isStart
+    global isStart # use for logging starting 00:00:00
     global start
 
-    global isAuto
+    global isAuto # use for first autoscaling time
     global autoStart
+
+    global dynamicStart # use for dynamic autoscaling (every 30 seconds)
+    global AutoW #default valule : 0.3
+    global WindowMax # base max value : 0.01 no action window max (prevent oscilliation)
+    global WindowMin # base min value : 0.0001 no action window min (prevent oscillation)
+    WindowMax = 0.01
+    WindowMin = 0.001
 
     if isStart == 0:
         start = dt.datetime.now()
@@ -283,6 +321,10 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
         get_dict = json.loads(r.get(key+"_on"))
         scaling_ins_sum += int(r.get(ins+reqtype+"_scaler")) # if autoscaling trigger total number of ins 
         scaling_ins = int(r.get(ins+reqtype+"_scaler")) # if autoscaling triggered, number of ins
+        ##### scaling_ins enforce test
+        #if ins == "c5":
+        #    scaling_ins = 20
+        ##### scaling_ins enforce test
         wait_time[ins_index] = inf_latency[ins_index] * float(get_dict["inflight"])
         avg_latency[ins_index] = float(get_dict["avglatency"])*1000.0
         if ins == "i1" and (reqtype == "R" or reqtype == "B" or reqtype == "Y" or reqtype == "S"): # for fixing cortex memeory bug ,decresing i1 scores
@@ -297,8 +339,24 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
             if (nowAuto > autoStart + 300): # digit means 0 ; 0 seconds, 300 means 5 mins
                 # if 5 minutes is passed
                 for i in range(scaling_ins-1):
-                    wait_time[ins_index] = wait_time[ins_index] * (0.3)
-                    avg_latency[ins_index] = avg_latency[ins_index] * (0.3) 
+                    
+                        
+                    # every 30 seconds logic is executed
+                    if(time.time() > dynamicStart + 30):
+                        #check inf variation
+                        var = float(r.get(key+"_var"))
+                        if(var < WindowMin):
+                            AutoW = AutoW * 0.95 # reduce weight by -5%
+                        elif(var >= WindowMin and var < WindowMax):
+                            AutoW = AutoW
+                        elif(var >= WindowMax):
+                            AutoW = AutoW * 1.05 # improve weight by +5%
+                        dynamicStart = time.time()
+                        logging.warning("AutoW : " + str(AutoW) + " " + key + "_var : " + str(var))
+
+
+                    wait_time[ins_index] = wait_time[ins_index] * AutoW
+                    avg_latency[ins_index] = avg_latency[ins_index] * AutoW 
                     #wait_time[ins_index] = wait_time[ins_index] * (0.7)
                     #avg_latency[ins_index] = avg_latency[ins_index] * (0.7) 
 
@@ -326,11 +384,14 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
             gapminuscount[ins_index] = gapminuscount[ins_index] + 1
 
         #logging.warning(str(time.strftime('%X', now)) + " " + str(ins) + " " + str(slo) + " " + str(avg_latency[ins_index]))
+
+        # for info.log -> accumulative req for each cloud instances
+        '''
         logging.warning(str(os.getpid()) + " " + str(now-start) + " " + str(ins) + " " + str(slo) + " " + str(round(avg_latency[ins_index],2))
                 + " inscount i1 " + str(inscount[0]) + " p2 " + str(inscount[1]) + " p3 " + str(inscount[2]) + " c5 " + str(inscount[3])
                 + " sum " + str(inscount[0]+inscount[1]+inscount[2]+inscount[3]) + " MRLG " + str(exp_l) + " SMPL " + str(smpl_exp_l) + " SMPL-MRLG " + str(smpl_exp_l - exp_l) + " (SMPL-MRLG)/SMPL*100 " + str((smpl_exp_l - exp_l)/smpl_exp_l*100) + " pluscount/minuscount i1 " + str(gappluscount[0]) + 
             "/" + str(gapminuscount[0]) + " p2 " + str(gappluscount[1]) + "/" + str(gapminuscount[1]) + " p3 " + str(gappluscount[2]) + "/" + str(gapminuscount[2]) + " c5 " + str(gappluscount[3]) + "/" + str(gapminuscount[3]))
-
+'''
 
  
 
@@ -524,7 +585,7 @@ def R_post():
         req_uuid = str(uuid.uuid4())
         #req_uuidrq = str(req_uuid) +"rq"
         # endpoint selection policy
-        endpoint, smpl_exp_l = endpoint_policy(r, "R", "off") # autoscaling on : "on", autoscaling off : "off"
+        endpoint, smpl_exp_l = endpoint_policy(r, "R", "on") # autoscaling on : "on", autoscaling off : "off"
         # request value
         req_json = {
                 "progress" : 0, # 0 : before dispatch, 1 : after dispatch

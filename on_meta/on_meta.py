@@ -80,7 +80,13 @@ def on_meta(r, queue):
     req_sec = [[0]*5 for j in range(5)]
     latency = [[0.0]*5 for j in range(5)]
     cnt = [[0]*5 for j in range(5)] # 0 -> 1 for prevent divided by zero : latency / cnt
+
+    
     slo_violate_cnt = [[0]*5 for j in range(5)]
+    slo2_violate_cnt = [[0]*5 for j in range(5)]
+    slo5_violate_cnt = [[0]*5 for j in range(5)]
+    slo8_violate_cnt = [[0]*5 for j in range(5)]
+
     first_check = [[0]*5 for j in range(5)] 
 
     base_time = time.time()
@@ -112,8 +118,14 @@ def on_meta(r, queue):
         #ins_index = instype.index(get_dict["endpoint"][-2:])
         if get_dict["reqtype"] == "R": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
             ins_index = instype.index(get_dict["endpoint"][-29:-27])
-        else: # for     "i1Rtail" : "image-classifier-resnet50-v2-i1" case
+        if get_dict["reqtype"] == "B": # for :     "i1Btail" : "sentiment-analyzer-v2-i1/v1/models/bert:predict", case
+            ins_index = instype.index(get_dict["endpoint"][-25:-23])
+        if get_dict["reqtype"] == "G": # for :     "i1Gtail" : "text-generator-v2-i1", case
             ins_index = instype.index(get_dict["endpoint"][-2:])
+        if get_dict["reqtype"] == "Y": # for :     "i1Ytail" : "sound-classifier-v2-i1/v1/models/yamnet:predict", case
+            ins_index = instype.index(get_dict["endpoint"][-27:-25])
+        if get_dict["reqtype"] == "S": # for :     "i1Stail" : "image-classifier-inception-v2-i1/v1/models/inception:predict", case
+            ins_index = instype.index(get_dict["endpoint"][-30:-28])
  
         req_index = reqtype.index(get_dict["reqtype"])
         
@@ -129,9 +141,24 @@ def on_meta(r, queue):
         if (get_dict["progress"] == 1) and (get_dict["metric_check"] == 0): # check metric if not metric checked and progress is 1
             latency[ins_index][req_index] += get_dict["latency"]
             slo_key = get_dict["reqtype"] + "_SLO_ms"
+
             slo = float(r.get(slo_key))/1000
+            slo2 = slo*0.2
+            slo5 = slo*0.5
+            slo8 = slo*0.8
+            
             if get_dict["latency"] > slo : # if slo violation
                 slo_violate_cnt[ins_index][req_index] += 1
+            if get_dict["latency"] > slo2 : # if slo*0.2 violation
+                slo2_violate_cnt[ins_index][req_index] += 1
+            if get_dict["latency"] > slo5 : # if slo*0.5 violation
+                slo5_violate_cnt[ins_index][req_index] += 1
+            if get_dict["latency"] > slo8 : # if slo*0.8 violation
+                slo8_violate_cnt[ins_index][req_index] += 1
+
+
+
+
             cnt[ins_index][req_index] += 1 # e.g. R_total_reqs : means measure the request count except timeout (60seconds) -> because progress value can not be "1"
 
             progress = get_dict["progress"]
@@ -170,8 +197,14 @@ def on_meta(r, queue):
 
                 if reqreqtype == "R": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
                     ins = endpoint[-29:-27]
-                else: # for     "i1Rtail" : "image-classifier-resnet50-v2-i1" case
+                if reqreqtype == "B": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+                    ins = endpoint[-25:-23]
+                if reqreqtype == "G": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
                     ins = endpoint[-2:]
+                if reqreqtype == "Y": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+                    ins = endpoint[-27:-25]
+                if reqreqtype == "S": # for :     "i1Rtail" : "image-classifier-resnet50-v2-i1/v1/models/resnet50:predict", case
+                    ins = endpoint[-30:-28]
 
                 ins_index = instype.index(ins)
                 if ((smpl_latency/1000 - avglatency) > 0):
@@ -193,7 +226,7 @@ def on_meta(r, queue):
             if cnt[ins_index][req_index] > 0:
                 set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index]/(cnt[ins_index][req_index]), req_sec[ins_index][req_index]) 
             #if(window == 59): # every 60 seconds : 0 -> 10 -> 20 -> 30 -> 40 -> 50
-                on_meta_summation(r, ins, req, cnt[ins_index][req_index], latency[ins_index][req_index], slo_violate_cnt[ins_index][req_index])
+                on_meta_summation(r, ins, req, cnt[ins_index][req_index], latency[ins_index][req_index], slo_violate_cnt[ins_index][req_index], slo2_violate_cnt[ins_index][req_index], slo5_violate_cnt[ins_index][req_index], slo8_violate_cnt[ins_index][req_index])
             elif cnt[ins_index][req_index] == 0:
                 set_meta(r, ins, req, inflight[ins_index][req_index], latency[ins_index][req_index], req_sec[ins_index][req_index]) 
 
@@ -203,31 +236,57 @@ def on_meta(r, queue):
     #    logging.warning(e)
 
 # (60sec window) summation : total avglatency, total slo violation rate
-def on_meta_summation(r, ins, req, reqs, latencies, slo_violate_cnt):
+def on_meta_summation(r, ins, req, reqs, latencies, slo_violate_cnt, slo2_violate_cnt, slo5_violate_cnt, slo8_violate_cnt):
     
     logging.info("summation starts")
     req_key = req + "_total_reqs"
     latency_key = req + "_avg_latency"
+
     slo_key = req + "_slo_vio_rate"
+    slo2_key = req + "_slo2_vio_rate"
+    slo5_key = req + "_slo5_vio_rate"
+    slo8_key = req + "_slo8_vio_rate"
+
+    
     vio_cnt_key = req + "_slo_vio_cnt"
     ins_vio_cnt_key = ins + req + "_slo_vio_cnt"
 
     now_reqs = int(r.get(req_key))
     now_latencies = float(r.get(latency_key)) * float(now_reqs)
+ 
     now_slo_vio_rate = float(r.get(slo_key)) * float(now_reqs)
+    now_slo2_vio_rate = float(r.get(slo2_key)) * float(now_reqs)
+    now_slo5_vio_rate = float(r.get(slo5_key)) * float(now_reqs)
+    now_slo8_vio_rate = float(r.get(slo8_key)) * float(now_reqs)
+
+
     now_vio_cnt = int(r.get(vio_cnt_key))
     now_ins_vio_cnt = int(r.get(ins_vio_cnt_key))
 
     now_reqs += int(reqs)
     now_latencies += float(latencies)
+
     now_slo_vio_rate += float(slo_violate_cnt)
+    now_slo2_vio_rate += float(slo2_violate_cnt)
+    now_slo5_vio_rate += float(slo5_violate_cnt)
+    now_slo8_vio_rate += float(slo8_violate_cnt)
+ 
+    
+    
     now_vio_cnt += int(slo_violate_cnt) 
     now_ins_vio_cnt += int(slo_violate_cnt)
 
     if(now_reqs != 0):
         r.set(req_key, now_reqs)
         r.set(latency_key, now_latencies / float(now_reqs))
+        
+        
         r.set(slo_key, now_slo_vio_rate / float(now_reqs))
+        r.set(slo2_key, now_slo2_vio_rate / float(now_reqs))
+        r.set(slo5_key, now_slo5_vio_rate / float(now_reqs))
+        r.set(slo8_key, now_slo8_vio_rate / float(now_reqs))
+ 
+        
         r.set(vio_cnt_key, now_vio_cnt)
         r.set(ins_vio_cnt_key, now_ins_vio_cnt)
 
