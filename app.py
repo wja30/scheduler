@@ -183,6 +183,7 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     logging.info("endpoint :"+endpoint)
     return endpoint
 '''
+'''
 # SMPL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
@@ -267,7 +268,7 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
         #now = time.localtime()
         #print(time.strftime('%X', now))
         # for detail log analysis
-        logging.warning(str(os.getpid()) + " " +str(now-start) + " " + str(ins) + " " + str(slo) + " " + str(wait_time[ins_index])
+        logging.info(str(os.getpid()) + " " +str(now-start) + " " + str(ins) + " " + str(slo) + " " + str(wait_time[ins_index])
                 + " inscount i1 " + str(inscount[0]) + " p2 " + str(inscount[1]) + " p3 " + str(inscount[2]) + " c5 " + str(inscount[3])
                 + " sum " + str(inscount[0]+inscount[1]+inscount[2]+inscount[3]))
 
@@ -286,6 +287,8 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint, 0.5
+'''
+
 # MRLG endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new policy is calculated
     # endpoint_policy algorithm
@@ -386,13 +389,10 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
         #logging.warning(str(time.strftime('%X', now)) + " " + str(ins) + " " + str(slo) + " " + str(avg_latency[ins_index]))
 
         # for info.log -> accumulative req for each cloud instances
-        '''
-        logging.warning(str(os.getpid()) + " " + str(now-start) + " " + str(ins) + " " + str(slo) + " " + str(round(avg_latency[ins_index],2))
+        logging.info(str(os.getpid()) + " " + str(now-start) + " " + str(ins) + " " + str(slo) + " " + str(round(avg_latency[ins_index],2))
                 + " inscount i1 " + str(inscount[0]) + " p2 " + str(inscount[1]) + " p3 " + str(inscount[2]) + " c5 " + str(inscount[3])
                 + " sum " + str(inscount[0]+inscount[1]+inscount[2]+inscount[3]) + " MRLG " + str(exp_l) + " SMPL " + str(smpl_exp_l) + " SMPL-MRLG " + str(smpl_exp_l - exp_l) + " (SMPL-MRLG)/SMPL*100 " + str((smpl_exp_l - exp_l)/smpl_exp_l*100) + " pluscount/minuscount i1 " + str(gappluscount[0]) + 
             "/" + str(gapminuscount[0]) + " p2 " + str(gappluscount[1]) + "/" + str(gapminuscount[1]) + " p3 " + str(gappluscount[2]) + "/" + str(gapminuscount[2]) + " c5 " + str(gappluscount[3]) + "/" + str(gapminuscount[3]))
-'''
-
  
 
     for ins in instype:
@@ -455,8 +455,6 @@ def endpoint_policy(r, reqtype, auto="off"): # default auto off, if on : new pol
     endpoint = "http://"+r.get(instype[ins_index]+"api")+"/"+r.get(instype[ins_index]+reqtype+"tail")
     logging.info("endpoint :"+endpoint)
     return endpoint
-'''
-'''
 # SLO-MAEL endpoint_policy
 def endpoint_policy(r, reqtype, auto="off"):
     # endpoint_policy algorithm
